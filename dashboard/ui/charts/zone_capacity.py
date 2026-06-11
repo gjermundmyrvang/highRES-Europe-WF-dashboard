@@ -3,21 +3,6 @@ from data.transformer import build_zone_capacity
 from plots.capacity_map import plot_zone_map
 
 def render_zone_capicity(data, geo):
-    # Aggregate
-    total_by_zone = (
-        data["var_tot_pcap_z"]
-        .groupby("z")["value"]
-        .sum()
-        .reset_index(name="total")
-    )
-
-    new_by_zone = (
-        data["var_new_pcap_z"]
-        .groupby("z")["value"]
-        .sum()
-        .reset_index(name="new")
-    )
-
     st.subheader("Capacity by zone")
 
     tot_z = data["var_tot_pcap_z"]
