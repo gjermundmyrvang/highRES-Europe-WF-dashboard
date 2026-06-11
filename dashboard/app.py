@@ -23,7 +23,7 @@ scenario_paths = find_result_files()
 # ---------- PAGE SETUP ------------
 st.set_page_config(layout="wide")
 st.title("highRES Dashboard")
-st.caption("Energy system model results")
+st.caption("Energy system model results (page under development...)")
 
 def main():
     scenario = render_sidebar(scenario_paths)
