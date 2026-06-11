@@ -10,13 +10,20 @@ def render_zone_capicity(data, geo):
 
     zone_cap = build_zone_capacity(tot_z, new_z)
 
-    # Controls
+    # Radio buttons
     cap_type = st.radio(
         "Capacity type",
         ["Total", "New", "Existing"],
         horizontal=True,
     )
 
+    value_col = {
+        "Total": "total",
+        "New": "new",
+        "Existing": "existing",
+    }[cap_type]
+
+    # Filter selectbox
     techs = sorted(zone_cap["g"].unique())
 
     selected_tech = st.selectbox(
@@ -24,18 +31,11 @@ def render_zone_capicity(data, geo):
         ["All"] + techs
     )
 
-    # Filter
+    # Filter data if not all selected
     plot_data = zone_cap.copy()
-
     if selected_tech != "All":
         plot_data = plot_data[plot_data["g"] == selected_tech]
 
-    # Sum over technologies if needed
-    value_col = {
-        "Total": "total",
-        "New": "new",
-        "Existing": "existing",
-    }[cap_type]
 
     plot_data = (
         plot_data.groupby("z")[value_col]
