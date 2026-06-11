@@ -4,3 +4,5 @@ resources
 work_*/
 *.sh
 .snakemake
+dashboard/test.py
+test_logs
