@@ -44,6 +44,6 @@ def render_zone_capicity(data, geo):
     )
 
     fig_map = plot_zone_map(plot_data, geo, value_col)
-    st.plotly_chart(fig_map, use_container_width=True)
+    st.plotly_chart(fig_map, use_container_width="stretch")
 
 

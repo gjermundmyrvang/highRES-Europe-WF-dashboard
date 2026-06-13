@@ -20,4 +20,4 @@ def render_total_capicity(data):
     }
 
     fig = plot_tot_bars(combined, view, y_cols)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width="stretch")
