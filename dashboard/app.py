@@ -1,12 +1,12 @@
 import streamlit as st
-import plotly.express as px
 import json
+from pathlib import Path
 from data_loader import find_result_files 
 from data.loader import load_scenario
 from ui.sidebar import render_sidebar
 from ui.charts.total_capacity import render_total_capicity
 from ui.charts.zone_capacity import render_zone_capicity
-
+import argparse
 
 TECH_COLORS = {
     "Solar":               "#F5C518",
@@ -18,7 +18,15 @@ TECH_COLORS = {
     "NuclearEPR":          "#E74C3C",
 }
 
-scenario_paths = find_result_files()
+parser = argparse.ArgumentParser()
+parser.add_argument("--results-path", type=str, default=None)
+args = parser.parse_args()
+
+if args.results_path:
+    scenario_paths = {Path(args.results_path).name: Path(args.results_path) / "results.gdx"}
+else:
+    scenario_paths = find_result_files()
+
 
 # ---------- PAGE SETUP ------------
 st.set_page_config(layout="wide")
@@ -37,7 +45,7 @@ def main():
         render_total_capicity(data)
         
     # -------------- CHARTS (By zones) ------------------
-    with open("../intermediate_data/region/shapes/europe_onshore.geojson") as f:
+    with open("intermediate_data/region/shapes/europe_onshore.geojson") as f:
         geo = json.load(f)
 
     with col2:
