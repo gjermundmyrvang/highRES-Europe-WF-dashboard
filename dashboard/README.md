@@ -39,7 +39,23 @@ Status: Proof of concept done. Dashboard runs end-to-end via Snakemake or direct
 - The code for the actual plots (graphs) live in the plots folder
 - The code for rendering the UI-components like the different plots live in the ui folder
 
-## How to run it
+## How to run this branch
+
+1. Clone the fork and check out the branch:
+
+```bash
+git clone https://github.com/gjermundmyrvang/highRES-Europe-WF-dashboard.git
+cd highRES-Europe-WF-dashboard
+git checkout feature/results-dashboard
+```
+
+2. Install the extra dependencies:
+
+```bash
+pip install streamlit plotly
+```
+
+3. You also need to manually add or generate the `intermediate_data/` and `shared_input/` folder (not included in the repo ~7GB).
 
 The dashboard is now part of `rule all`. Just run the normal command:
 
