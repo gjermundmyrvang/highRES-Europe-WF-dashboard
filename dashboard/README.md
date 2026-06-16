@@ -15,9 +15,6 @@ Status: Proof of concept done. Dashboard runs end-to-end via Snakemake or direct
         ├── plot_capacity_pie.py
         ├── technology_bar.py
         ├── tot_trans_flow.py
-    └── 📁test_logs
-        ├── test_1.txt
-        ├── test_2.txt
     └── 📁ui
         └── 📁charts
             ├── tot_trans_flow.py
