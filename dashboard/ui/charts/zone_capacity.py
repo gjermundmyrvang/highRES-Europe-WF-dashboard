@@ -3,7 +3,9 @@ from data.transformer import build_zone_capacity
 from plots.capacity_map import plot_zone_map
 
 def render_zone_capicity(data, geo):
-    st.subheader("Capacity by zone")
+    st.subheader("Installed Capicity Map")
+    st.text("var_tot_pcap_z & var_new_pcap_z")
+
 
     tot_z = data["var_tot_pcap_z"]
     new_z = data["var_new_pcap_z"]
