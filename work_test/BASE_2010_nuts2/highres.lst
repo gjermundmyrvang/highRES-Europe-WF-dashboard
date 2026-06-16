@@ -1,0 +1,210 @@
+--- Job highres.gms Start 06/09/26 14:24:40 53.5.1 f2e5fac3 DAX-DAC arm 64bit/macOS--- Applying:    /Library/Frameworks/GAMS.framework/Versions/53/Resources/gmsprmun.txt    /Users/gjerry10/Library/Preferences/GAMS/gamsconfig.yaml--- GAMS Parameters defined    Input /Users/gjerry10/Dokumenter/highRES_dashboard/resources/highRES-Europe-GAMS/highres.gms    ScrDir /Users/gjerry10/Dokumenter/highRES_dashboard/work_test/BASE_2010_nuts2/225a/    SysDir /Library/Frameworks/GAMS.framework/Versions/53/Resources/    AppendLog 1    gdxCompress 1    --codefolderpath /Users/gjerry10/Dokumenter/highRES_dashboard/resources/highRES-Europe-GAMS    --psys_scen BASE    --co2_target_type intensity    --co2_target_extent all    --weather_yr 2010    --dem_yr 2010    --outname results    --store_initial_level 0.5    --store_final_level 0.5    --hydro_res_initial_fill 0.8    --hydro_res_min 0.5    --pgen 20.0    --emis_price 0    --trans_inv TYNDP    --trans_cap_lim 20    --UC OFF    --f_res OFF    --store_uc OFF    --EV ON    --EV_flex 0    --V2G OFF    --EV_pcap 0.011    --EV_soc_min 0.2    --EV_soc_max 0.8Licensee: Arild Hemstad                                  G260223+0003Ac-GEN          University of Oslo                                        DCE4686          225a/gamslice.dat          9648a8e0-1ad2-4931          node:27553203 mem:16 cores:10 ipport:63998 v:2                             Course license for use within the course and related course work          The time-limited license stops working on : Sep 21, 2026System information: 10 physical cores and 16 Gb physical memory detectedGAMS 53.5.1   Copyright (C) 1987-2026 GAMS Development. All rights reserved--- Starting compilation--- highres.gms(151) 2 Mb--- > highres_data_input.gms(10) 3 Mb--- >> _regions.dd(292) 3 Mb--- > highres_data_input.gms(14) 3 Mb--- >> zones.dd(28) 3 Mb--- > highres_data_input.gms(19) 3 Mb--- >> 2010_temporal.dd(109) 3 Mb--- > highres_data_input.gms(82) 3 Mb--- >> BASE_gen.dd(1988) 3 Mb--- > highres_data_input.gms(83) 3 Mb--- >> trans.dd(290) 3 Mb--- > highres_data_input.gms(84) 3 Mb--- >> BASE_co2_target.dd(5) 3 Mb--- > highres_data_input.gms(88) 3 Mb--- >> vre_areas_2010_.dd(888) 3 Mb--- > highres_data_input.gms(90) 3 Mb--- >> BASE_demand_2010.dd(1348) 3 Mb--- > highres_data_input.gms(92) 3 Mb--- GDXin=/Users/gjerry10/Dokumenter/highRES_dashboard/work_test/BASE_2010_nuts2/vre_2010_.gdx--- GDX File ($gdxIn) /Users/gjerry10/Dokumenter/highRES_dashboard/work_test/BASE_2010_nuts2/vre_2010_.gdx--- > highres_data_input.gms(100) 5 Mb--- highres.gms(153) 5 Mb--- > highres_storage_setup.gms(49) 5 Mb--- >> BASE_store.dd(397) 5 Mb--- > highres_storage_setup.gms(60) 5 Mb--- >> ev_data.dd(4108) 5 Mb--- > highres_storage_setup.gms(329) 5 Mb--- highres.gms(474) 5 Mb--- > highres_hydro.gms(13) 5 Mb--- GDXin=/Users/gjerry10/Dokumenter/highRES_dashboard/work_test/BASE_2010_nuts2/hydro_res_inflow_2010.gdx--- GDX File ($gdxIn) /Users/gjerry10/Dokumenter/highRES_dashboard/work_test/BASE_2010_nuts2/hydro_res_inflow_2010.gdx--- > highres_hydro.gms(148) 5 Mb--- highres.gms(937) 5 Mb--- > highres_results.gms(439) 5 Mb--- highres.gms(949) 5 Mb--- Starting execution: elapsed 0:00:00.023--- highres.gms(10742) 6 Mb--- Generating LP model Dispatch--- highres.gms(10747) 51 Mb---   98,177 rows  87,052 columns  357,304 non-zeroes--- Range statistics (absolute non-zero finite values)--- RHS       [min, max] : [ 5.000E-04, 1.093E+03] - Zero values observed as well--- Bound     [min, max] : [ 1.000E-04, 8.435E+04] - Zero values observed as well--- Matrix    [min, max] : [ 1.000E-03, 8.450E+00] - Zero values observed as well--- Executing CPLEX (Solvelink=2): elapsed 0:00:00.208IBM ILOG CPLEX   53.5.1 f2e5fac3 May 20, 2026          DAC arm 64bit/macOS    --- GAMS/CPLEX Link licensed for continuous and discrete problems.Reading parameter(s) from "/Users/gjerry10/Dokumenter/highRES_dashboard/work_test/BASE_2010_nuts2/cplex.opt">>  lpmethod 4>>  solutiontype 2>>  threads 4>>  predual 1>>  BarOrder 0>>  barepcomp 1E-7Finished reading from "/Users/gjerry10/Dokumenter/highRES_dashboard/work_test/BASE_2010_nuts2/cplex.opt"--- GMO setup time: 0.00s--- Space for names approximately 7.35 Mb--- Use option 'names no' to turn use of names off--- GMO memory 38.16 Mb (peak 38.53 Mb)--- Dictionary memory 0.00 Mb--- Cplex 22.1.2.0 link memory 2.78 Mb (peak 16.35 Mb)--- Starting CplexVersion identifier: 22.1.2.0 | 2024-12-02 | 8bd2200c8CPXPARAM_Advance                                 0CPXPARAM_Preprocessing_Dual                      1CPXPARAM_LPMethod                                4CPXPARAM_Threads                                 4CPXPARAM_Parallel                                1CPXPARAM_SolutionType                            2CPXPARAM_MIP_Display                             4CPXPARAM_MIP_Pool_Capacity                       03036                                             1CPXPARAM_MIP_Tolerances_AbsMIPGap                0CPXPARAM_Barrier_ConvergeTol                     9.9999999999999995e-08Tried aggregator 1 time.LP Presolve eliminated 31739 rows and 23100 columns.Aggregator did 4474 substitutions.Reduced LP has 59478 rows, 69990 columns, and 202923 nonzeros.Presolve time = 0.11 sec. (124.02 ticks)Parallel mode: using up to 4 threads for barrier.***NOTE: Found 238 dense columns.Number of nonzeros in lower triangle of A*A' = 746739Using Nested Dissection orderingTotal time for automatic ordering = 0.39 sec. (628.22 ticks)Summary statistics for Cholesky factor:  Threads                   = 4  Rows in Factor            = 59716  Integer space required    = 270877  Total non-zeros in factor = 3588343  Total FP ops to factor    = 655752129 Itn      Primal Obj        Dual Obj  Prim Inf Upper Inf  Dual Inf Inf Ratio   0  -4.9102299e+06   2.7808591e+01  3.81e+04  0.00e+00  1.29e+08  1.00e+00   1  -1.3915637e+06   4.1733976e+04  1.16e+04  0.00e+00  9.20e+07  4.66e-02   2  -2.6136311e+05   4.9232624e+04  2.53e+03  0.00e+00  4.05e+07  2.80e-02   3  -5.7956935e+04   3.3495621e+04  6.94e+02  0.00e+00  1.96e+07  4.32e-02   4  -2.4097179e+04   1.3442784e+04  2.90e+02  0.00e+00  7.77e+06  9.77e-02   5  -8.8953577e+03   5.2072163e+03  1.05e+02  0.00e+00  3.12e+06  2.65e-01   6  -5.7768215e+03   2.4192135e+03  6.95e+01  0.00e+00  1.31e+06  7.25e-01   7  -5.5052990e+03   2.0662240e+03  6.69e+01  0.00e+00  8.90e+05  1.05e+00   8  -2.9008662e+03   1.6021823e+03  4.14e+01  0.00e+00  3.30e+05  3.42e+00   9  -1.4751419e+03   1.3440261e+03  2.64e+01  0.00e+00  1.77e+05  6.85e+00  10  -5.9404128e+02   1.1317580e+03  1.67e+01  0.00e+00  8.96e+04  1.47e+01  11   1.0889774e+02   1.0293680e+03  8.39e+00  0.00e+00  6.02e+04  2.35e+01  12   3.2181463e+02   9.2391747e+02  5.34e+00  0.00e+00  4.13e+04  3.67e+01  13   4.7086680e+02   8.5698831e+02  3.07e+00  0.00e+00  3.03e+04  5.33e+01  14   5.4684153e+02   8.1230950e+02  1.82e+00  0.00e+00  2.35e+04  7.27e+01  15   5.8101907e+02   7.6237588e+02  1.25e+00  0.00e+00  1.60e+04  1.11e+02  16   6.0367771e+02   7.3305525e+02  8.91e-01  0.00e+00  1.14e+04  1.66e+02  17   6.1295022e+02   7.1360069e+02  7.54e-01  0.00e+00  8.21e+03  2.45e+02  18   6.3238358e+02   6.9959576e+02  4.93e-01  0.00e+00  5.62e+03  3.82e+02  19   6.4197239e+02   6.9335853e+02  3.66e-01  0.00e+00  4.45e+03  5.00e+02  20   6.4880489e+02   6.8757413e+02  2.76e-01  0.00e+00  3.36e+03  6.92e+02  21   6.5311089e+02   6.8467712e+02  2.21e-01  0.00e+00  2.79e+03  8.56e+02  22   6.5755229e+02   6.8084476e+02  1.65e-01  0.00e+00  2.03e+03  1.23e+03  23   6.5988586e+02   6.7819640e+02  1.37e-01  0.00e+00  1.47e+03  1.78e+03  24   6.6308666e+02   6.7689100e+02  1.01e-01  0.00e+00  1.16e+03  2.30e+03  25   6.6423233e+02   6.7541985e+02  8.73e-02  0.00e+00  8.29e+02  3.35e+03  26   6.6670329e+02   6.7446797e+02  6.00e-02  0.00e+00  5.88e+02  4.87e+03  27   6.6708727e+02   6.7377173e+02  5.57e-02  0.00e+00  4.20e+02  7.00e+03  28   6.6845277e+02   6.7326677e+02  4.10e-02  0.00e+00  2.79e+02  1.07e+04  29   6.6942488e+02   6.7299002e+02  3.04e-02  0.00e+00  2.05e+02  1.47e+04  30   6.6967470e+02   6.7272153e+02  2.76e-02  0.00e+00  1.41e+02  2.16e+04  31   6.7036118e+02   6.7250279e+02  2.01e-02  0.00e+00  8.08e+01  3.70e+04  32   6.7081509e+02   6.7236525e+02  1.50e-02  0.00e+00  4.86e+01  5.92e+04  33   6.7115629e+02   6.7231953e+02  1.11e-02  0.00e+00  3.96e+01  7.12e+04  34   6.7142177e+02   6.7224827e+02  7.83e-03  0.00e+00  2.88e+01  9.57e+04  35   6.7160090e+02   6.7218228e+02  5.48e-03  0.00e+00  2.05e+01  1.32e+05  36   6.7176048e+02   6.7211679e+02  3.29e-03  0.00e+00  1.32e+01  2.02e+05  37   6.7177383e+02   6.7209006e+02  3.09e-03  0.00e+00  1.07e+01  2.49e+05  38   6.7186581e+02   6.7204482e+02  1.72e-03  0.00e+00  6.20e+00  4.20e+05  39   6.7188921e+02   6.7202759e+02  1.35e-03  0.00e+00  4.72e+00  5.49e+05  40   6.7192102e+02   6.7200674e+02  8.28e-04  0.00e+00  2.95e+00  8.67e+05  41   6.7193848e+02   6.7199670e+02  5.30e-04  0.00e+00  2.16e+00  1.18e+06  42   6.7194618e+02   6.7199003e+02  3.91e-04  0.00e+00  1.66e+00  1.54e+06  43   6.7195507e+02   6.7198151e+02  2.30e-04  0.00e+00  1.03e+00  2.49e+06  44   6.7195686e+02   6.7197660e+02  1.97e-04  0.00e+00  6.70e-01  3.86e+06  45   6.7196027e+02   6.7197252e+02  1.38e-04  0.00e+00  3.49e-01  7.29e+06  46   6.7196335e+02   6.7197052e+02  9.41e-05  0.00e+00  1.86e-01  1.31e+07  47   6.7196490e+02   6.7196916e+02  8.39e-05  0.00e+00  9.37e-02  2.54e+07  48   6.7196599e+02   6.7196825e+02  8.68e-05  0.00e+00  2.55e-02  7.52e+07  49   6.7196698e+02   6.7196811e+02  1.07e-04  0.00e+00  1.98e-02  9.66e+07  50   6.7196719e+02   6.7196772e+02  1.28e-04  0.00e+00  3.06e-03  5.38e+08  51   6.7196744e+02   6.7196766e+02  1.57e-04  0.00e+00  7.15e-04  1.75e+09  52   6.7196760e+02   6.7196763e+02  1.67e-04  0.00e+00  1.81e-04  6.90e+09Barrier time = 3.08 sec. (5563.78 ticks)Total time on 4 threads = 3.08 sec. (5563.78 ticks)--- LP status (1): optimal.--- Cplex Time: 3.08sec (det. 5564.06 ticks)Optimal solution foundObjective:          671.967630--- Reading solution for model Dispatch--- Executing after solve: elapsed 0:00:03.510--- highres.gms(10753) 51 Mb--- highres.gms(10986) 51 Mb--- highres.gms(11085) 51 Mb--- highres.gms(11202) 51 Mb--- GDX File (execute_unload) /Users/gjerry10/Dokumenter/highRES_dashboard/work_test/BASE_2010_nuts2/results.gdx--- Putfile fname /Users/gjerry10/Dokumenter/highRES_dashboard/work_test/BASE_2010_nuts2/test_log--- Profile Summary (196 records processed)     3.268   0.051GB     10747 Solver     Dispatch     0.172   0.051GB     11202 Unload          0.169   0.051GB     11013 Assignment vre_curtail (40666)     0.086   0.051GB     10747 Solve Fini Dispatch (357304)     0.034   0.051GB     10747 Solve Read Dispatch     0.026   0.050GB     10600 Equation   eq_gen_vre_r (42624)     0.015   0.051GB     10857 Assignment o_variableC (1)     0.013   0.025GB     10606 Equation   eq_gen_vre (6720)     0.013   0.051GB     11042 Assignment o_grossRet_vre (876)     0.012   0.017GB     10548 Equation   eq_elc_balance (1344)*** Status: Normal completion--- Job highres.gms Stop 06/09/26 14:24:44 elapsed 0:00:03.971----   9991 Equation   eq_store_gen_max1    0.003     0.018 SECS     12 MB   5088
+----   9973 Equation   eq_store_charge_max    0.002     0.020 SECS     12 MB   5088
+----   9968 Equation   eq_store_ecap_max    0.000     0.020 SECS     12 MB     50
+----   9916 Equation   eq_new_store_pcap    0.000     0.020 SECS     12 MB      5
+----   9919 Equation   eq_exist_store_pcap    0.000     0.020 SECS     12 MB      5
+----   9922 Equation   eq_tot_store_pcap_z    0.000     0.020 SECS     12 MB    140
+----   9926 Equation   eq_tot_store_pcap    0.000     0.020 SECS     12 MB      5
+----   9931 Equation   eq_new_store_ecap    0.000     0.020 SECS     12 MB      5
+----   9934 Equation   eq_exist_store_ecap    0.000     0.020 SECS     12 MB      5
+----   9937 Equation   eq_tot_store_ecap_z    0.000     0.020 SECS     12 MB    140
+----   9941 Equation   eq_tot_store_ecap    0.000     0.020 SECS     12 MB      5
+----   9984 Equation   eq_store_end_level    0.000     0.020 SECS     12 MB    106
+----  10395 Equation   eq_hydro_balance    0.002     0.022 SECS     12 MB   1152
+----  10402 Equation   eq_hydro_level    0.000     0.022 SECS     13 MB   1152
+----  10405 Equation   eq_hydro_gen_max    0.001     0.023 SECS     13 MB   1152
+----  10378 Equation   eq_new_hydro_ecap    0.000     0.023 SECS     13 MB      1
+----  10381 Equation   eq_exist_hydro_ecap    0.000     0.023 SECS     13 MB      1
+----  10384 Equation   eq_tot_hydro_ecap_z    0.000     0.023 SECS     13 MB     28
+----  10387 Equation   eq_tot_hydro_ecap    0.000     0.023 SECS     13 MB      1
+----  10468 Equation   eq_obj        0.000     0.023 SECS     13 MB      1
+----  10484 Equation   eq_costs_gen_capex    0.000     0.023 SECS     13 MB     28
+----  10493 Equation   eq_costs_gen_fom    0.000     0.023 SECS     13 MB     28
+----  10497 Equation   eq_costs_gen_varom    0.005     0.028 SECS     14 MB     28
+----  10488 Equation   eq_costs_gen_vreconnection    0.000     0.028 SECS     14 MB     28
+----  10504 Equation   eq_costs_store_capex    0.000     0.028 SECS     14 MB     28
+----  10508 Equation   eq_costs_store_fom    0.000     0.028 SECS     14 MB     28
+----  10512 Equation   eq_costs_store_varom    0.001     0.029 SECS     14 MB     28
+----  10518 Equation   eq_costs_trans_capex    0.000     0.029 SECS     14 MB     28
+----  10528 Equation   eq_costs_trans_fom    0.000     0.029 SECS     14 MB     28
+----  10548 Equation   eq_elc_balance    0.012     0.041 SECS     17 MB   1344
+----  10582 Equation   eq_new_pcap    0.000     0.041 SECS     17 MB     12
+----  10585 Equation   eq_exist_pcap    0.000     0.041 SECS     17 MB     12
+----  10591 Equation   eq_tot_pcap    0.000     0.041 SECS     17 MB     12
+----  10588 Equation   eq_tot_pcap_z    0.000     0.041 SECS     18 MB    336
+----  10631 Equation   eq_gen_max    0.004     0.045 SECS     19 MB   7584
+----  10636 Equation   eq_gen_min    0.004     0.049 SECS     19 MB   4896
+----  10642 Equation   eq_ramp_up    0.001     0.050 SECS     19 MB   1344
+----  10646 Equation   eq_ramp_down    0.002     0.052 SECS     19 MB   1344
+----  10612 Equation   eq_new_vre_pcap_z    0.000     0.052 SECS     19 MB    140
+----  10615 Equation   eq_exist_vre_pcap_z    0.000     0.052 SECS     19 MB    140
+----  10606 Equation   eq_gen_vre    0.013     0.065 SECS     25 MB   6720
+----  10600 Equation   eq_gen_vre_r    0.026     0.091 SECS     50 MB  42624
+----  10622 Equation   eq_area_max    0.000     0.091 SECS     50 MB    888
+----  10662 Equation   eq_trans_tot_pcap    0.000     0.091 SECS     50 MB    122
+----  10672 Equation   eq_trans_flow    0.005     0.096 SECS     50 MB   5856
+----  10682 Equation   eq_trans_bidirect_new    0.000     0.096 SECS     50 MB    122
+----  10685 Equation   eq_trans_bidirect_exist    0.001     0.097 SECS     50 MB    122
+----  10698 Equation   eq_co2_target    0.002     0.099 SECS     50 MB      1
+GAMS 53.5.1  f2e5fac3 May 20, 2026          DAX-DAC arm 64bit/macOS - 06/09/26 14:24:40 Page 5
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Range Statistics    SOLVE Dispatch Using LP From line 10747
+
+
+RANGE STATISTICS (ABSOLUTE NON-ZERO FINITE VALUES)
+
+RHS       [min, max] : [ 5.000E-04, 1.093E+03] - Zero values observed as well
+Bound     [min, max] : [ 1.000E-04, 8.435E+04] - Zero values observed as well
+Matrix    [min, max] : [ 1.000E-03, 8.450E+00] - Zero values observed as well
+
+GAMS 53.5.1  f2e5fac3 May 20, 2026          DAX-DAC arm 64bit/macOS - 06/09/26 14:24:40 Page 6
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE Dispatch Using LP From line 10747
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS          50     SINGLE EQUATIONS       98,177
+BLOCKS OF VARIABLES          48     SINGLE VARIABLES       87,052  1,152 projected
+NON ZERO ELEMENTS       357,304
+
+
+----  10747 Solve Fini Dispatch      0.086     0.185 SECS     51 MB  357304
+GENERATION TIME      =        0.178 SECONDS     51 MB  53.5.1 f2e5fac3 DAX-DAC
+----  10747 Solver     Dispatch      3.268     3.453 SECS     51 MB 
+GAMS 53.5.1  f2e5fac3 May 20, 2026          DAX-DAC arm 64bit/macOS - 06/09/26 14:24:40 Page 7
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE Dispatch Using LP From line 10747
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   Dispatch            OBJECTIVE  costs
+     TYPE    LP                  DIRECTION  MINIMIZE
+     SOLVER  CPLEX               FROM LINE  10747
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      1 Optimal
+**** OBJECTIVE VALUE              671.9676
+
+ RESOURCE USAGE, LIMIT          3.097 10000000000.000
+ ITERATION COUNT, LIMIT        52    2147483647
+--- GAMS/CPLEX Link licensed for continuous and discrete problems.
+
+Reading parameter(s) from "/Users/gjerry10/Dokumenter/highRES_dashboard/work_test/BASE_2010_nuts2/cplex.opt"
+>>  lpmethod 4
+>>  solutiontype 2
+>>  threads 4
+>>  predual 1
+>>  BarOrder 0
+>>  barepcomp 1E-7
+Finished reading from "/Users/gjerry10/Dokumenter/highRES_dashboard/work_test/BASE_2010_nuts2/cplex.opt"
+
+--- GMO setup time: 0.00s
+--- Space for names approximately 7.35 Mb
+--- Use option 'names no' to turn use of names off
+--- GMO memory 38.16 Mb (peak 38.53 Mb)
+--- Dictionary memory 0.00 Mb
+--- Cplex 22.1.2.0 link memory 2.78 Mb (peak 16.35 Mb)
+--- Starting Cplex
+
+
+--- LP status (1): optimal.
+--- Cplex Time: 3.08sec (det. 5564.06 ticks)
+
+
+Optimal solution found
+Objective:          671.967630
+
+
+
+**** REPORT SUMMARY :        0     NONOPT
+                             0 INFEASIBLE
+                             0  UNBOUNDED
+----  10747 Solve Read Dispatch      0.034     3.487 SECS     51 MB 
+GAMS 53.5.1  f2e5fac3 May 20, 2026          DAX-DAC arm 64bit/macOS - 06/09/26 14:24:40 Page 8
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+E x e c u t i o n
+
+
+----  10753 Assignment trans_f       0.003     3.490 SECS     51 MB   1817
+----  10758 Assignment max_bidir_trans    0.004     3.494 SECS     51 MB      1
+----  10766 Assignment now           0.000     3.494 SECS     51 MB      1
+----  10767 Assignment year          0.000     3.494 SECS     51 MB      1
+----  10768 Assignment month         0.000     3.494 SECS     51 MB      1
+----  10769 Assignment day           0.000     3.494 SECS     51 MB      1
+----  10770 Assignment hour          0.000     3.494 SECS     51 MB      1
+----  10771 Assignment minute        0.000     3.494 SECS     51 MB      1
+----  10776 Assignment cplex_absgap    0.000     3.494 SECS     51 MB      1
+----  10777 Assignment cplex_relgap    0.000     3.494 SECS     51 MB      1
+----  10780 Assignment fname         0.000     3.494 SECS     51 MB      0
+----  10781 Put                      0.000     3.494 SECS     51 MB 
+----  10857 Assignment o_variableC    0.015     3.509 SECS     51 MB      1
+----  10865 Assignment o_nonVREVarC    0.003     3.512 SECS     51 MB      1
+----  10869 Assignment o_VREVarC     0.011     3.523 SECS     51 MB      1
+----  10872 Assignment o_transVarC    0.002     3.525 SECS     51 MB      1
+----  10930 Assignment o_emissions    0.001     3.526 SECS     51 MB   6240
+----  10933 Assignment o_emissions_all    0.001     3.527 SECS     51 MB      1
+----  10943 Assignment o_trans_cap_sum    0.000     3.527 SECS     51 MB      2
+----  10973 Assignment o_non_vre_gen_tot    0.000     3.527 SECS     51 MB      5
+----  10976 Assignment o_non_vre_gen_out    0.001     3.528 SECS     51 MB    240
+----  10979 Assignment o_vre_gen_out    0.007     3.535 SECS     51 MB    216
+----  10982 Assignment o_vre_gen_tot    0.000     3.535 SECS     51 MB      5
+----  10986 Assignment o_gen         0.002     3.537 SECS     51 MB    504
+----  10989 Assignment o_gen_tot     0.000     3.537 SECS     51 MB     11
+----  11013 Assignment vre_curtail    0.169     3.706 SECS     51 MB  40666
+----  11017 Assignment o_curtail     0.004     3.710 SECS     51 MB      5
+----  11029 Assignment o_eprice      0.000     3.710 SECS     51 MB      0
+----  11036 Assignment o_grossRet_non_vre    0.002     3.712 SECS     51 MB    130
+----  11042 Assignment o_grossRet_vre    0.013     3.725 SECS     51 MB    876
+----  11048 Assignment o_grossRet_store    0.001     3.726 SECS     51 MB     78
+----  11054 Assignment o_gen_costs    0.009     3.735 SECS     51 MB      1
+----  11062 Assignment o_vre_cap_z_sum    0.001     3.736 SECS     51 MB    881
+----  11067 Assignment o_vre_cap_r_sum    0.000     3.736 SECS     51 MB    117
+----  11073 Assignment o_nvre_cap_z_sum    0.000     3.736 SECS     51 MB      5
+----  11079 Assignment o_vre_gen_sum_r    0.004     3.740 SECS     51 MB      5
+----  11085 Assignment o_vre_gen_sum_z    0.009     3.749 SECS     51 MB    876
+----  11089 Assignment o_vre_gen_sum_r_z    0.007     3.756 SECS     51 MB    117
+----  11093 Assignment o_vre_gen_sum_r_zone    0.004     3.760 SECS     51 MB   4705
+----  11100 Assignment o_vre_gen_sum_h    0.004     3.764 SECS     51 MB    216
+----  11104 Assignment o_gen_sum_zone    0.001     3.765 SECS     51 MB    130
+----  11110 Assignment o_gen_sum_z    0.002     3.767 SECS     51 MB      5
+----  11114 Assignment o_gen_sum_h    0.000     3.767 SECS     51 MB    240
+----  11118 Assignment o_store_gen_sum_h    0.001     3.768 SECS     51 MB    192
+----  11129 Assignment o_store_gen_sum    0.001     3.769 SECS     51 MB    106
+----  11135 Assignment o_store_gen_all    0.000     3.769 SECS     51 MB      4
+----  11141 Assignment o_nvre_gen_sum_z    0.001     3.770 SECS     51 MB      5
+----  11145 Assignment o_vre_gen_sum_r    0.005     3.775 SECS     51 MB      5
+----  11150 Assignment o_Residual_D    0.001     3.776 SECS     51 MB   1344
+----  11202 Unload                   0.172     3.948 SECS     51 MB 
+
+**** REPORT FILE SUMMARY
+
+fname /Users/gjerry10/Dokumenter/highRES_dashboard/work_test/BASE_2010_nuts2/test_log
+
+
+EXECUTION TIME       =        3.948 SECONDS     51 MB  53.5.1 f2e5fac3 DAX-DAC
+
+
+USER: Arild Hemstad                                  G260223+0003Ac-GEN
+      University of Oslo                                        DCE4686
+      License for teaching and research at degree granting institutions
+
+
+**** FILE SUMMARY
+
+Input      /Users/gjerry10/Dokumenter/highRES_dashboard/resources/highRES-Europe-GAMS/highres.gms
+Output     /Users/gjerry10/Dokumenter/highRES_dashboard/work_test/BASE_2010_nuts2/highres.lst
+----  11202 GAMS Fini                0.000     0.000 SECS     51 MB 
+ 
+---- Profile Summary (196 records processed)
+     3.268   0.051GB     10747 Solver     Dispatch
+     0.172   0.051GB     11202 Unload     
+     0.169   0.051GB     11013 Assignment vre_curtail (40666)
+     0.086   0.051GB     10747 Solve Fini Dispatch (357304)
+     0.034   0.051GB     10747 Solve Read Dispatch
+     0.026   0.050GB     10600 Equation   eq_gen_vre_r (42624)
+     0.015   0.051GB     10857 Assignment o_variableC (1)
+     0.013   0.025GB     10606 Equation   eq_gen_vre (6720)
+     0.013   0.051GB     11042 Assignment o_grossRet_vre (876)
+     0.012   0.017GB     10548 Equation   eq_elc_balance (1344)

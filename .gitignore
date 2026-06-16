@@ -1,7 +1,6 @@
 shared_input
 intermediate_data
 resources
-work_*/
 *.sh
 .snakemake
 dashboard/test.py
