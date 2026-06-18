@@ -2,6 +2,7 @@ import streamlit as st
 import json
 from data_loader import find_work_folders 
 from data.loader import load_scenario
+from data.cost_transformer import adjust_currency, adjust_inflation, get_eur_gbp_rate
 from ui.sidebar import render_sidebar
 from ui.charts.total_capacity import render_total_capicity
 from ui.charts.zone_capacity_v2 import render_zone_capicity_v2
@@ -18,8 +19,11 @@ def main():
     data = load_scenario(scenario / "results.gdx")
 
     total_cost = data["costs"].iloc[0]["value"]
-    st.subheader(f"Total Cost: {round(total_cost, 3)}")
+    st.subheader(f"Model Raw Cost: {round(total_cost)} (in million GBP)")
 
+    adjusted = adjust_currency(adjust_inflation(total_cost * 1000000), get_eur_gbp_rate())
+    st.subheader(f"Total Cost: €{adjusted:,.2f}")
+    st.text("Converted to millions --> adjusted for inflation --> adjusted for currency translation")
 
     # --------------- CHARTS (Aggregated for all countries) ---------
     render_total_capicity(data)
