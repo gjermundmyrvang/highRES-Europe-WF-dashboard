@@ -54,6 +54,12 @@ pip install streamlit plotly
 
 3. You also need to manually add or generate the `intermediate_data/` and `shared_input/` folder (not included in the repo ~7GB).
 
+4. Activate enviornment `mamba activate highres`
+
+5. Run the app (two ways):
+
+#### 5.1 Run model then load dashboard:
+
 The dashboard is now part of `rule all`. Just run the normal command:
 
 ```bash
@@ -62,6 +68,10 @@ snakemake -c all --configfile config/config_ci.yaml
 
 This runs the full pipeline (if needed) and once `results.gdx` exists, opens
 the dashboard in your browser. Ctrl+C to stop.
+
+---
+
+#### 5.2 Run dashboard directly
 
 You can also run the dashboard standalone for development. Requires you have a 'work' folder with at least one scenario with a `results.gdx` file:
 
