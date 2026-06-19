@@ -6,3 +6,6 @@ resources
 dashboard/test.py
 test_logs
 .vscode
+__pycache__/
+*.pyc
+.DS_Store
