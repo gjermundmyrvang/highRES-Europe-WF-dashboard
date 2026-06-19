@@ -4,9 +4,8 @@ from data_loader import find_work_folders
 from data.loader import load_scenario
 from data.cost_transformer import adjust_currency, adjust_inflation, get_eur_gbp_rate
 from ui.sidebar import render_sidebar
-from ui.charts.total_capacity import render_total_capicity
-from ui.charts.zone_capacity_v2 import render_zone_capicity_v2
-from ui.charts.zone_capacity import render_zone_capicity
+from ui.charts import render_total_capicity, render_zone_capicity, render_zone_capicity_v2, render_capacity_charts
+
 
 # ---------- PAGE SETUP ------------
 st.set_page_config(layout="wide")
@@ -36,8 +35,11 @@ def main():
     st.divider()
 
     # -------------- Installed vs. Potential ------------------
-    render_zone_capicity_v2(data)
-    st.divider()
+    # render_zone_capicity_v2(data)
+    # st.divider()
+
+    # ------------ EXPLORATION OF CHARTS -------------------
+    render_capacity_charts(data)
     
 if __name__ == "__main__":
     main()
