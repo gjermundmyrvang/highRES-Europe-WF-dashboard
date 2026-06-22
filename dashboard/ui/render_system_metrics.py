@@ -6,7 +6,7 @@ def render_system_metrics(data):
         "Inflation adjustment factor",
         min_value=0.5,
         max_value=6.0,
-        value=1.30,   # assumption
+        value=1.589,   # https://www.bankofengland.co.uk/monetary-policy/inflation/inflation-calculator
         step=0.05,
         help="Multiplier applied to convert historical GBP into today's GBP",
         width=300
