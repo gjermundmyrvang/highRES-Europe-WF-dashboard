@@ -9,8 +9,8 @@ def get_eur_gbp_rate():
     parsed = response.json()
     return parsed[0]["rate"]
 
-def adjust_inflation(gbp_value):
-    return gbp_value * 1.586
+def adjust_inflation(gbp_value, factor):
+    return gbp_value * factor
 
 def adjust_currency(gbp_value, rate):
     adjusted = gbp_value * rate
