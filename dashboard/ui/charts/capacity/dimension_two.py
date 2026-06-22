@@ -1,80 +1,71 @@
 import streamlit as st
-import numpy as np
-import plotly.express as px
-
-def _calculate_utilization(tot_z, potential_z):
-    vre_techs = set(potential_z["g"].unique())
-    installed_vre = tot_z[tot_z["g"].isin(vre_techs)]
- 
-    installed_agg = (
-        installed_vre
-        .groupby(["z", "g"], as_index=False)["value"]
-        .sum()
-        .rename(columns={"value": "installed"})
-    )
- 
-    potential_agg = (
-        potential_z
-        .groupby(["z", "g"], as_index=False)["value"]
-        .sum()
-        .rename(columns={"value": "potential"})
-    )
- 
-    df = installed_agg.merge(potential_agg, on=["z", "g"], how="inner")
- 
-    df["utilization_pct"] = np.where(
-        df["potential"] > 0,
-        df["installed"] / df["potential"] * 100,
-        np.nan,
-    )
- 
-    return df
+from data.country_names import get_country_name
+from data.utilization import calculate_utilization
+from .figures import render_sankey, render_pivot, render_bar_chart
 
 def render_dimension_two(tot_z, potential_z):
     st.subheader("Dimension 2: How much of the available potential is utilized?")
-    st.text("Dataset: var_tot_pcap_z & area")
+    st.markdown("Dataset: `var_tot_pcap_z` & `area`")
+    st.info(
+        """
+        Available potential (GW-values) from `area` is reported at the regional (`r`) level and aggregated to country (`z`) level before comparison. Utilization is then calculated for each country-technology pair (`z`, `g`) as: `Utilization (%) = Installed Capacity / Available Potential × 100`
+
+        Missing installed capacity values are treated as 0
+        """
+    )
+
+    st.warning(
+        """
+        Data note: All `HydroRoR` potential values in the `area` dataset are stored as `+INF`. These values are replaced with missing values (`NaN`)
+        before analysis.
+        """
+    )
  
-    df = _calculate_utilization(tot_z, potential_z)
- 
-    # Key metrics
-    st.write("Installed total:", round(df["installed"].sum()), "GW")
-    st.write("Potential total:", round(df["potential"].sum()), "GW")
-    st.metric(
-        "Average utilization (tech-country pairs)",
-        f"{df['utilization_pct'].mean():.1f}%",
-    )
-    st.metric(
-        "Average utilization (across countries)",
-        f"{df.groupby('z')['utilization_pct'].mean().mean():.1f}%",
-    )
-    st.metric(
-        "System-wide utilization (installed vs potential)",
-        f"{(df['installed'].sum() / df['potential'].sum()) * 100:.1f}%",
-    )
+    df = calculate_utilization(tot_z, potential_z)
+    df["country_name"] = df["z"].apply(get_country_name)
+
+    # Key Metrics
+    _render_key_metrics(df)
  
     # Charts
     st.subheader("Utilization of VRE technologies:")
-    pivot = df.pivot(index="z", columns="g", values="utilization_pct")
+
+    render_sankey(df)
+    render_pivot(df)
+    render_bar_chart(df)
+
+    
  
-    fig = px.imshow(
-        pivot,
-        text_auto=".0f",
-        aspect="auto",
-        color_continuous_scale="Viridis",
-        height=800,
-    )
-    st.plotly_chart(fig, use_container_width=True)
- 
-    fig = px.bar(
-        df,
-        x="utilization_pct",
-        y="z",
-        color="g",
-        orientation="h",
-        barmode="stack",
-        height=800,
-    )
-    st.plotly_chart(fig, use_container_width=True)
- 
-    with st.expander("See data table (pivot)"):
-        st.dataframe(pivot)
+
+def _render_key_metrics(df):
+    st.subheader("Key Metrics")
+    installed_total = df["installed"].sum()
+    potential_total = df["potential"].sum()
+
+    # Ratio of total installed to total potential.
+    system_util = (installed_total / potential_total) * 100
+
+    # Top summary row
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.metric(
+            "Installed Capacity",
+            f"{installed_total:,.0f} GW",
+            delta="Total capacity"
+        )
+
+    with col2:
+        st.metric(
+            "Total Potential",
+            f"{potential_total:,.0f} GW",
+            delta="Potential capacity"
+        )
+
+    with col3:
+        st.metric(
+            "System Utilization",
+            f"{system_util:.1f}%",
+        )
+
+    st.divider()
