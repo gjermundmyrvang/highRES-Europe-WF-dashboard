@@ -2,38 +2,11 @@
 
 Status: Proof of concept done. Dashboard runs end-to-end via Snakemake or directly with streamlit command.
 
-## Dashboard structure
-
-```
-└── 📁dashboard
-    └── 📁data
-        ├── country_names.py
-        ├── loader.py
-        ├── transformer.py
-    └── 📁plots
-        ├── capacity_map.py
-        ├── plot_capacity_pie.py
-        ├── technology_bar.py
-        ├── tot_trans_flow.py
-    └── 📁ui
-        └── 📁charts
-            ├── tot_trans_flow.py
-            ├── total_capacity.py
-            ├── zone_capacity_v2.py
-            ├── zone_capacity.py
-        ├── sidebar.py
-    ├── __init__.py
-    ├── app.py
-    ├── data_loader.py
-    ├── README.md
-```
-
 ## Whats done
 
 - Streamlit dashboard in `dashboard/app.py`
 - Loads results from a scenario's `results.gdx` using `data_loader.py`
 - `app.py` renders the different components like sidebar and different charts
-- The code for the actual plots (graphs) live in the plots folder
 - The code for rendering the UI-components like the different plots live in the ui folder
 
 ## How to run this branch
