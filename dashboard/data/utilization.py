@@ -1,5 +1,9 @@
 import numpy as np
 
+# TODO: This is different between techs?
+AREA_FACTOR = 2.4  # 1 km² produces 2.4 GW?
+
+
 def calculate_utilization(tot_z, potential_z):
     vre_techs = set(potential_z["g"].unique()) # area-table only has VRE techs
     installed_vre = tot_z[tot_z["g"].isin(vre_techs)]
@@ -30,3 +34,19 @@ def calculate_utilization(tot_z, potential_z):
  
     return df
 
+
+def calculate_area_utilization(df):
+    df["potential_area"] = df["potential"] / AREA_FACTOR
+    df["installed_area"] = df["installed"] / AREA_FACTOR
+    df["unused_area"] = df["potential_area"] - df["installed_area"]
+
+    country_area = df.groupby("z").agg(
+    potential_area=("potential_area", "sum"),
+    installed_area=("installed_area", "sum"),
+    ).reset_index()
+
+    country_area["utilization_pct"] = (
+        country_area["installed_area"] / country_area["potential_area"] * 100
+    )
+    return country_area
+    
