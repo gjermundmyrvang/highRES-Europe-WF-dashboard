@@ -38,7 +38,7 @@ def main():
     with tab2:
 
         # ------------ EXPLORATION OF CAPACITY CHARTS -------------------
-        render_capacity_charts(data)
+        render_capacity_charts(data, geo)
     
 if __name__ == "__main__":
     main()
