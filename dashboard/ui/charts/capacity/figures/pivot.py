@@ -1,0 +1,26 @@
+import streamlit as st
+import plotly.express as px
+from ui.components import filter_countries
+
+def render_pivot(df):
+    # Installed / potential (across techs) per country
+    filtered_pivot = filter_countries(df, [], "filter_pivot") # '[]' returns just all countries
+    pivot = filtered_pivot.pivot(index="country_name", columns="g", values="utilization_pct")
+
+    # Heatmap viz for country tech combinations
+    fig = px.imshow(
+        pivot,
+        text_auto=".0f",
+        aspect="auto",
+        color_continuous_scale="blues",
+        title="Utilization by Country and Technology (%)",
+        height=800,
+    )
+    fig.update_layout(
+        xaxis_title="Technology",
+        yaxis_title=None
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    with st.expander("See data table (pivot)"):
+        st.dataframe(pivot)
