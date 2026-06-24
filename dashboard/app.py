@@ -3,7 +3,7 @@ import json
 from data_loader import find_work_folders 
 from data.loader import load_scenario
 from ui import render_sidebar, render_system_metrics
-from ui.charts import render_total_capicity, render_zone_capicity, render_zone_capicity_v2, render_capacity_charts
+from ui.charts import render_total_capicity, render_zone_capicity, render_capacity_charts
 
 
 # ---------- PAGE SETUP ------------
@@ -29,11 +29,6 @@ def main():
             
         # -------------- Zone Map ------------------
         render_zone_capicity(data, geo)
-        st.divider()
-
-        # -------------- Installed vs. Potential ------------------
-        # render_zone_capicity_v2(data)
-        # st.divider()
 
     with tab2:
 
