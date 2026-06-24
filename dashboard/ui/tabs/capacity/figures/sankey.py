@@ -44,4 +44,4 @@ def render_sankey(df):
         textfont=dict(color="white", size=20),
     ))
     fig.update_layout(title="Potential vs installed/unused capacity flow", height=1200)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig)

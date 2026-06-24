@@ -6,7 +6,8 @@ def render_bar_chart(df):
     # Bar chart country ranking
     filtered_bar = filter_countries(df, [], "filter_barchart")
     country_util = filtered_bar.groupby("country_name").apply(
-        lambda x: x["installed"].sum() / x["potential"].sum() * 100
+        lambda x: x["installed"].sum() / x["potential"].sum() * 100,
+        include_groups=False,
     ).reset_index(name="utilization_pct")
     country_util_sorted = country_util.sort_values("utilization_pct", ascending=True)
     avg_util_country = country_util["utilization_pct"].mean()
@@ -40,7 +41,7 @@ def render_bar_chart(df):
         yanchor="bottom",
         font=dict(color="red")
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig)
 
     with st.expander("See data table"):
         st.dataframe(country_util.sort_values("utilization_pct", ascending=False))

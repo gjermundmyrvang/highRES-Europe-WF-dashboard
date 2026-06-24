@@ -18,7 +18,7 @@ def render_country_charts(country_df, total_installed, total_unused):
             color_discrete_map={"Used": "green", "Unused": "lightgrey"},
         )
         fig.update_layout(showlegend=False)
-        st.plotly_chart(fig, use_container_width="stretch")
+        st.plotly_chart(fig)
 
     with col_bar:
         st.caption("Area utilization by technology")
@@ -34,4 +34,4 @@ def render_country_charts(country_df, total_installed, total_unused):
             },
         )
         fig.update_layout(showlegend=False)
-        st.plotly_chart(fig, use_container_width="stretch")
+        st.plotly_chart(fig)

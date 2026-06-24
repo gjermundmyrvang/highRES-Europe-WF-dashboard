@@ -13,7 +13,7 @@ def render_dimension_one(tot_z):
         cols = st.slider("Columns", min_value=2, max_value=6, value=3)
  
     fig = render_capacity_pies(filtered, cols=cols)
-    st.plotly_chart(fig, use_container_width="stretch")
+    st.plotly_chart(fig)
  
     with st.expander("See data table"):
         st.dataframe(filtered)

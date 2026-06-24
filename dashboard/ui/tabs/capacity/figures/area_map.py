@@ -26,6 +26,6 @@ def render_area_map(df, geo):
     fig.update_geos(fitbounds="locations", visible=False)
     fig.update_layout(height=800)
     
-    selected = st.plotly_chart(fig, on_select="rerun",use_container_width="stretch", key="map") # Workaround for click-to-select
+    selected = st.plotly_chart(fig, on_select="rerun", key="map") # Workaround for click-to-select
 
     return selected

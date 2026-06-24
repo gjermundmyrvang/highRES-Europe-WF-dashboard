@@ -20,7 +20,7 @@ def render_pivot(df):
         xaxis_title="Technology",
         yaxis_title=None
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig)
 
     with st.expander("See data table (pivot)"):
         st.dataframe(pivot)
