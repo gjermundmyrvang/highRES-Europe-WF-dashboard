@@ -12,6 +12,8 @@ VARIABLES = [
     "area"
 ]
 
+SETS = ["hfirst", "hlast", "day", "month", "year"]
+
 THRESHOLD = 1e-3 # Store only levels (values) > 0.001
 
 def find_work_folders(base_path: str | Path = "..") -> dict[str, dict[str, Path]]:
@@ -53,3 +55,13 @@ def clean_results(results: dict[str, pd.DataFrame]) -> dict[str, pd.DataFrame]:
             .reset_index(drop=True)
         )
     return cleaned
+
+def load_sets(gdx_path: str | Path) -> dict:
+    gdx_path = Path(gdx_path)
+    sets = {}
+    with gdxpds.gdx.GdxFile(lazy_load=False) as gdx:
+        gdx.read(str(gdx_path))
+        for s in SETS:
+            if s in gdx:
+                sets[s] = int(gdx[s].dataframe.iloc[0, 0])
+    return sets

@@ -1,8 +1,14 @@
 import streamlit as st
+from datetime import datetime, timedelta
 from data.cost_transformer import adjust_currency, adjust_inflation, get_exchange_rate, get_currencies
 
 
-def render_system_metrics(data):
+def render_system_metrics(data, hour_data):
+    # Hour Data
+    _render_hour_data(hour_data)
+    st.divider()
+
+    st.subheader("Model Total Cost")
     # Settings 
     col_settings_1, col_settings_2 = st.columns([0.4, 0.6])
 
@@ -35,7 +41,7 @@ def render_system_metrics(data):
     adjusted = adjust_currency(adjusted_gbp, rate)
 
     # Metrics
-    col1, col2 = st.columns([0.4, 0.6])
+    col1, col2 = st.columns([0.4, 0.6], border=True)
 
     with col1:
         st.metric(
@@ -54,3 +60,13 @@ def render_system_metrics(data):
     st.caption(
         f"Raw model cost inflated by ×{inflation_factor} then converted from GBP to {selected_currency['iso_code']} at rate {rate:.4f}."
     )
+
+def _render_hour_data(h_df):
+    st.subheader("Model Metadata")
+    
+    st.metric("Scenario Created", f"{h_df['day']:02d}/{h_df['month']:02d}/{h_df['year']}")
+
+    col1, col2 = st.columns(2)
+
+    col1.metric("Model Time Range", f"Hour {h_df['hfirst']} --> Hour {h_df['hlast']}")
+    col2.metric("Total Hours Modelled", h_df["hlast"] - h_df["hfirst"] + 1)
