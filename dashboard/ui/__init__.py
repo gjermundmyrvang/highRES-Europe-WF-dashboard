@@ -1,2 +1,1 @@
-from .render_system_metrics import render_system_metrics
 from .sidebar import render_sidebar
