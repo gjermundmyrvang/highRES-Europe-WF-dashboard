@@ -1,5 +1,5 @@
 import streamlit as st
-from plots.plot_capacity_pie import plot_capacity_pies
+from .figures import render_capacity_pies
 from ui.components import filter_countries
  
 def render_dimension_one(tot_z):
@@ -12,7 +12,7 @@ def render_dimension_one(tot_z):
     with col2:
         cols = st.slider("Columns", min_value=2, max_value=6, value=3)
  
-    fig = plot_capacity_pies(filtered, cols=cols)
+    fig = render_capacity_pies(filtered, cols=cols)
     st.plotly_chart(fig, use_container_width="stretch")
  
     with st.expander("See data table"):

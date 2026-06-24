@@ -1,20 +1,11 @@
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from data.country_names import get_country_name
-
-TECH_COLORS = {
-    "Solar":               "#F5C518",
-    "Windonshore":         "#4A90D9",
-    "Windoffshore":        "#1B5FA8",
-    "WindoffshoreFloat":   "#0D3B6E",
-    "HydroRoR":            "#2ECC71",
-    "HydroRes":            "#1A8C4E",
-    "NuclearEPR":          "#E74C3C",
-}
+from data.tech_colors import TECH_COLORS
 
 DEFAULT_COLOR = "#cccccc"
 
-def plot_capacity_pies(df, cols: int = 4):
+def render_capacity_pies(df, cols: int = 4):
     countries = sorted(set(df["z"]))
     n = len(countries)
     rows = -(-n // cols)
