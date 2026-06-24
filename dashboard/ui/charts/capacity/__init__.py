@@ -1,4 +1,0 @@
-from .render_capicity import render_capacity_charts
-from .dimension_one import render_dimension_one
-from .dimension_two import render_dimension_two
-from .dimension_three import render_dimension_three
