@@ -5,7 +5,7 @@ from ui.components import filter_countries
 def render_country_scatter(df):
     filtered = filter_countries(df, default=[], key="filter_scatterplot")
     
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2, border=True)
     with col1:
         _render_util_scatter(filtered)
 
