@@ -1,13 +1,18 @@
 import requests
+import streamlit as st
 
-def get_eur_gbp_rate():
-    url = "https://api.frankfurter.dev/v2/rates"
-    headers = {"Accept": "application/json"}
-    params = {"base": "GBP", "quotes": "EUR"}
+@st.cache_data
+def get_currencies():
+    response = requests.get("https://api.frankfurter.dev/v2/currencies")
+    return response.json()
 
-    response = requests.get(url, headers=headers, params=params)
-    parsed = response.json()
-    return parsed[0]["rate"]
+@st.cache_data
+def get_exchange_rate(target_currency):
+    response = requests.get(
+        "https://api.frankfurter.dev/v2/rates",
+        params={"base": "GBP", "quotes": target_currency}
+    )
+    return response.json()[0]["rate"]
 
 def adjust_inflation(gbp_value, factor):
     return gbp_value * factor
