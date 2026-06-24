@@ -15,8 +15,10 @@ def main():
     scenario = render_sidebar(find_work_folders("./")) # Load focused scenario
 
     data = load_scenario(scenario / "results.gdx")
+    with open("intermediate_data/region/shapes/europe_onshore.geojson") as f:
+        geo = json.load(f)
 
-    tab1, tab2 = st.tabs(["Overview", "Explore Capacity"])
+    tab1, tab2, tab3 = st.tabs(["Overview", "Explore Capacity", "Map"])
 
     with tab1:
         render_system_metrics(data)
@@ -26,8 +28,6 @@ def main():
         st.divider()
             
         # -------------- Zone Map ------------------
-        with open("intermediate_data/region/shapes/europe_onshore.geojson") as f:
-            geo = json.load(f)
         render_zone_capicity(data, geo)
         st.divider()
 
@@ -39,6 +39,9 @@ def main():
 
         # ------------ EXPLORATION OF CAPACITY CHARTS -------------------
         render_capacity_charts(data, geo)
+
+    with tab3:
+        st.title("Tab 3: TODO")
     
 if __name__ == "__main__":
     main()
