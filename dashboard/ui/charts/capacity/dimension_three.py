@@ -1,10 +1,10 @@
 import streamlit as st
 from data.utilization import calculate_utilization, calculate_area_utilization
 from data.country_names import get_country_name
-from .figures import render_area_map, render_country_charts
+from .figures import render_area_map, render_country_charts, render_country_scatter
 
 def render_dimension_three(tot_z, potential_z, geo):
-    st.subheader("Dimension 3: How much of area (km²) is used?")
+    st.subheader("Dimension 3: How much of area (km²) is used for VRE techs?")
     st.markdown("Dataset: `var_tot_pcap_z` & `area`")
 
     df = calculate_utilization(tot_z, potential_z)
@@ -21,6 +21,10 @@ def render_dimension_three(tot_z, potential_z, geo):
             capacity and available potential for each country-technology pair.
             """
         )
+
+    st.divider()
+    render_country_scatter(country_area)
+
 
     col_map, col_metrics = st.columns([0.6, 0.4])
     with col_map:
