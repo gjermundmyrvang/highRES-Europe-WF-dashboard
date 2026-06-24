@@ -3,8 +3,7 @@ import json
 from data_loader import find_work_folders 
 from data.loader import load_scenario
 from ui import render_sidebar
-from ui.charts import render_capacity_charts
-from ui.tabs import render_overview
+from ui.tabs import render_overview, render_capacity
 
 
 # ---------- PAGE SETUP ------------
@@ -25,9 +24,7 @@ def main():
         render_overview(data)
 
     with tab2:
-
-        # ------------ EXPLORATION OF CAPACITY CHARTS -------------------
-        render_capacity_charts(data, geo)
+        render_capacity(data, geo)
 
     with tab3:
         st.title("Tab 3: TODO")
