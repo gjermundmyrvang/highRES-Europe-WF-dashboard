@@ -43,5 +43,5 @@ def render_sankey(df):
         link=dict(source=source, target=target, value=value, hovertemplate="%{source.label} → %{target.label}: %{value:.1f} GW<extra></extra>",  color=link_colors,),
         textfont=dict(color="white", size=20),
     ))
-    fig.update_layout(title="Potential vs installed/unused capacity flow", height=1200)
+    fig.update_layout(title="Potential vs installed/unused capacity flow", height=1000)
     st.plotly_chart(fig)
