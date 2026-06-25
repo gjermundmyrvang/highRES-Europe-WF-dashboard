@@ -59,8 +59,9 @@ streamlit run dashboard/app.py
 - Path to `intermediate_data/.../europe_onshore.geojson` is hardcoded relative
   to project root. Will break if run from elsewhere.
 
-## Next up
+## Questions for further work
 
-- Keep working with key data, but bring in more dimensions, make it more useful
-- Think about displays that makes sense to different stakeholders
-- Test with complete scenario (one year) --> change from gdxpd to gams-api?
+- Visualizing costs, what tables are important and what makes sense to show?
+- Visualizing transmissions, both total and hourly, best structure for this?
+- Splitview with multiple scenarios, relevant feature?
+- EN-Roads scenario playground, relevant future feature?
