@@ -4,7 +4,7 @@ from data.utilization import calculate_utilization
 from .figures import render_sankey, render_pivot, render_bar_chart
 
 def render_dimension_two(tot_z, potential_z):
-    st.subheader("Dimension 2: How much of the available potential (GW) is utilized?")
+    st.subheader("Dimension 2: How much of the available potential (GW) of VRE tech is utilized?")
     st.markdown("Dataset: `var_tot_pcap_z` & `area`")
  
     df = calculate_utilization(tot_z, potential_z)
@@ -53,14 +53,14 @@ def _render_key_metrics(df):
 
     with col1:
         st.metric(
-            "Installed Capacity",
+            "Installed VRE Capacity",
             f"{installed_total:,.0f} GW",
             delta="Total capacity"
         )
 
     with col2:
         st.metric(
-            "Total Potential",
+            "Total VRE Potential",
             f"{potential_total:,.0f} GW",
             delta="Potential capacity"
         )
