@@ -3,7 +3,7 @@ import json
 from data_loader import find_work_folders, load_sets 
 from data.loader import load_scenario
 from ui import render_sidebar
-from ui.tabs import render_overview, render_capacity
+from ui.tabs import render_overview, render_capacity, render_map
 
 
 # ---------- PAGE SETUP ------------
@@ -29,7 +29,8 @@ def main():
         render_capacity(data, geo)
 
     with tab3:
-        st.title("Tab 3: TODO")
+        render_map(data, geo)
+        
     
 if __name__ == "__main__":
     main()
