@@ -1,0 +1,14 @@
+name: highres-dashboard
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - pandas
+  - numpy
+  - requests
+  - shapely
+  - pip:
+      - streamlit
+      - plotly
+      - gdxpds
