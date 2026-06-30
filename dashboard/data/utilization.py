@@ -50,13 +50,32 @@ def calculate_area_utilization(df):
     df["installed_area"] = df["installed"] / AREA_FACTOR
     df["unused_area"] = df["potential_area"] - df["installed_area"]
 
-    country_area = df.groupby("z").agg(
-    potential_area=("potential_area", "sum"),
-    installed_area=("installed_area", "sum"),
-    ).reset_index()
+    country_area = (
+        df.groupby("z")
+        .agg(
+            potential_area=("potential_area", "sum"),
+            installed_area=("installed_area", "sum"),
+        )
+        .reset_index()
+    )
 
     country_area["utilization_pct"] = (
         country_area["installed_area"] / country_area["potential_area"] * 100
     )
     return country_area
-    
+
+
+def aggregate_potential(df):
+    df = df[df["g"] != "HydroRoR"]
+    return df.groupby(["g"], as_index=False)["value"].sum()
+
+
+def capacity_to_area(df):
+    df = df.copy()
+
+    df["factor"] = df["g"].map(CAPACITY_TO_AREA)
+    df = df.dropna(subset=["factor"])
+
+    df["area_km2"] = df["value"] * df["factor"]
+
+    return df
