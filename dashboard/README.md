@@ -61,6 +61,8 @@ streamlit run dashboard/app.py
 
 ## Questions for further work
 
+- gen_cap2area --> is this the values for mapping GW to Km2?
+- Structure of dashboard, a tool where you manually add scenarios to a designated folder or either manually + new step in snakefile so result gdx scenarios also automatically gets moved inside this folder
 - Visualizing costs, what tables are important and what makes sense to show?
 - Visualizing transmissions, both total and hourly, best structure for this?
 - Splitview with multiple scenarios, relevant feature?
