@@ -20,3 +20,15 @@ def adjust_inflation(gbp_value, factor):
 def adjust_currency(gbp_value, rate):
     adjusted = gbp_value * rate
     return adjusted
+
+def format_money(value):
+    abs_val = abs(value)
+
+    if abs_val >= 1e12:
+        return f"{value/1e12:.2f}T"
+    if abs_val >= 1e9:
+        return f"{value/1e9:.2f}B"
+    if abs_val >= 1e6:
+        return f"{value/1e6:.2f}M"
+
+    return f"{value:,.0f}"
