@@ -5,7 +5,7 @@ from .figures import render_area_map, render_country_charts, render_country_scat
 
 def render_dimension_three(tot_z, potential_z, geo):
     st.subheader("Dimension 3: How much of area (km²) is used for VRE techs?")
-    st.markdown("Dataset: `var_tot_pcap_z` & `area`")
+    st.markdown("Dataset: `var_new_pcap_z` & `area`")
 
     df = calculate_utilization(tot_z, potential_z)
     country_area = calculate_area_utilization(df)
