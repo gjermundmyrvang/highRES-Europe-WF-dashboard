@@ -3,26 +3,29 @@ import pandas as pd
 from pathlib import Path
 
 VARIABLES = [
-    "var_new_pcap",
-    "var_new_pcap_z",
     "var_tot_pcap",
     "var_tot_pcap_z",
+    "var_new_pcap",
+    "var_new_pcap_z",
     "var_tot_trans_pcap",
     "costs",
-    "area"
+    "area", 
 ]
 
-SETS = ["hfirst", "hlast", "day", "month", "year"]
+SETS = ["hfirst", "hlast", "day", "month", "year", "vre", "z"]
 
 THRESHOLD = 1e-3 # Store only levels (values) > 0.001
 
 def find_work_folders(base_path: str | Path = "..") -> dict[str, dict[str, Path]]:
     base_path = Path(base_path)
     result = {}
-    for gdx in sorted(base_path.glob("work*/*/results.gdx")): # Work derived from config file (paths: results)
+
+    for gdx in sorted(base_path.glob("work*/*/results.gdx")):
         work_folder = gdx.parent.parent.name
-        scenario    = gdx.parent.name
-        result.setdefault(work_folder, {})[scenario] = gdx.parent
+        scenario = gdx.parent.name
+
+        result.setdefault(work_folder, {})[scenario] = gdx
+
     return result
 
 def load_results(gdx_path: str | Path) -> dict[str, pd.DataFrame]:
@@ -31,16 +34,16 @@ def load_results(gdx_path: str | Path) -> dict[str, pd.DataFrame]:
         raise FileNotFoundError(f"No GDX file found at {gdx_path}")
 
     results = {}
-    with gdxpds.gdx.GdxFile(lazy_load=False) as gdx:
+    with gdxpds.gdx.GdxFile(lazy_load=True) as gdx:
         gdx.read(str(gdx_path))
         for var in VARIABLES:
             if var in gdx:
+                gdx[var].load()
                 results[var] = gdx[var].dataframe.copy()
             else:
                 print(f"Warning: {var} not found in {gdx_path.name}")
 
     return results
-
 
 def clean_results(results: dict[str, pd.DataFrame]) -> dict[str, pd.DataFrame]:
     cleaned = {}
@@ -59,9 +62,33 @@ def clean_results(results: dict[str, pd.DataFrame]) -> dict[str, pd.DataFrame]:
 def load_sets(gdx_path: str | Path) -> dict:
     gdx_path = Path(gdx_path)
     sets = {}
-    with gdxpds.gdx.GdxFile(lazy_load=False) as gdx:
+
+    with gdxpds.gdx.GdxFile(lazy_load=True) as gdx:
         gdx.read(str(gdx_path))
+
         for s in SETS:
-            if s in gdx:
-                sets[s] = int(gdx[s].dataframe.iloc[0, 0])
+            if s not in gdx:
+                continue
+
+            gdx[s].load()
+            df = gdx[s].dataframe.copy().reset_index(drop=True)
+
+            # need to seperate different types of sets
+            if df.shape[0] == 1 and len(df.columns) >= 1:
+                sets[s] = {
+                    "type": "scalar",
+                    "value": df.iloc[0, 0]
+                }
+            else:
+                sets[s] = {
+                    "type": "table",
+                    "data": df
+                }
+
     return sets
+
+def scalar(sets, key):
+    return sets[key]["value"]
+
+def table(sets, key):
+    return sets[key]["data"]
