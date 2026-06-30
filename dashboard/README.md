@@ -19,40 +19,59 @@ cd highRES-Europe-WF-dashboard
 git checkout feature/results-dashboard
 ```
 
-2. Install the extra dependencies:
+2. Build and activate dashboard environment:
 
 ```bash
-pip install streamlit plotly
+mamba env create -f dashboard/environment.yml
 ```
-
-3. You also need to manually add or generate the `intermediate_data/` and `shared_input/` folder (not included in the repo ~7GB).
-
-4. Activate enviornment `mamba activate highres`
-
-5. Run the app (two ways):
-
-#### 5.1 Run model then load dashboard:
-
-The dashboard is now part of `rule all`. Just run the normal command:
 
 ```bash
-snakemake -c all --configfile config/config_ci.yaml
+mamba activate highres-dashboard
 ```
 
-This runs the full pipeline (if needed) and once `results.gdx` exists, opens
-the dashboard in your browser. Ctrl+C to stop.
+### 3. Run the dashboard
 
----
-
-#### 5.2 Run dashboard directly
-
-You can also run the dashboard standalone for development. Requires you have a 'work' folder with at least one scenario with a `results.gdx` file:
+From the project root, start the Streamlit dashboard:
 
 ```bash
 streamlit run dashboard/app.py
 ```
 
-(run from project root, not from `dashboard/`)
+---
+
+### 4. Switching scenarios
+
+By default, `data_loader.py` loads the pre-installed **dummy scenario** located at:
+
+```
+work_test/BASE_2010_nuts2
+```
+
+To use other scenarios, there are two options:
+
+#### Option 1: Load a custom scenario folder manually
+
+- Prepare a folder containing scenario(s) `.gdx` files
+- Make sure the folder is accessible from the project
+- Open the running Streamlit dashboard
+- Enter or select the path to that folder in the sidebar
+- Switch the dropdown to the **added** folder so its `.gdx` files are loaded
+
+#### Option 2: Run a full new scenario
+
+Update or set your configuration in `config/config_ci.yaml`, then run:
+
+```bash
+snakemake -c all --configfile config/config_ci.yaml
+```
+
+This will:
+
+- execute the full pipeline
+- generate `results.gdx`
+- automatically open the Streamlit dashboard in your browser
+
+Stop the dashboard with `Ctrl + C`.
 
 ## Things to fix/improve
 
