@@ -1,10 +1,10 @@
 import streamlit as st
 import numpy as np
 import plotly.express as px
-from data.utilization import calculate_utilization, CAPACITY_TO_AREA
+from data.utilization import calculate_utilization
 from data.country_names import get_country_name
 from data_loader import table
-from .figures import render_capacity_pies, render_pivot, render_sankey
+from .figures import render_capacity_pies, render_pivot
 from ui.components import filter_countries
 from data.constants import TECH_ICONS
 from ..shared import render_key_data
@@ -81,13 +81,14 @@ def _render_capacity_overview(df, sets):
 
 def _render_explore_installed_pcap(df, top5):
     st.subheader("Whats been installed by countries?")
-    st.markdown("Dataset: `var_tot_pcap_z` or `var_new_pcap_z`")
 
     tot_z = df["var_tot_pcap_z"]
     new_z = df["var_new_pcap_z"]
 
     selected_table = st.radio(
-        "Select focused table", ["`var_tot_pcap_z`", "`var_new_pcap_z`"]
+        "Select focused table",
+        options=["`var_tot_pcap_z`", "`var_new_pcap_z`"],
+        horizontal=True,
     )
 
     focused = tot_z if selected_table == "var_tot_pcap_z" else new_z
@@ -142,15 +143,33 @@ def _render_utilization(df, sets, geo):
     total_potential = util_df["potential"].sum().round(1)
     util_pct = (total_installed / total_potential * 100).round(1)
 
-    # System total
-    st.subheader("System Total")
-    with st.container(border=True):
-        st.metric(
-            "Installed",
-            f"{total_installed:,.0f} {unit_label}",
-            delta=f"{util_pct}% of {total_potential:,.0f} {unit_label} potential",
-        )
-        st.progress(float(util_pct / 100), text=f"{util_pct}%")
+    # VRE aggregated
+    total_col, vre_col = st.columns([0.3, 0.7])
+    with total_col:
+        st.subheader("Aggregated new VRE")
+        with st.container(border=True):
+            st.metric(
+                "Total VRE",
+                f"{total_installed:,.0f} {unit_label}",
+            )
+            st.progress(float(util_pct / 100), text=f"{util_pct}% of potential {unit}")
+
+    with vre_col:
+        st.subheader("By new VRE")
+        with st.container(border=True):
+            tech_df = (
+                util_df.groupby("g")[["installed", "potential"]].sum().reset_index()
+            )
+            n_vre_cols = len(tech_df["g"])
+            vre_cols = st.columns(n_vre_cols)
+            for i in range(n_vre_cols):
+                tech = tech_df.iloc[i]["g"]
+                installed = tech_df.iloc[i]["installed"]
+                potential = tech_df.iloc[i]["potential"]
+                util = (installed / potential * 100).round(1)
+                with vre_cols[i]:
+                    st.metric(tech, value=f"{installed.round(1)} {unit_label}")
+                    st.progress(float(util / 100), text=f"{util}% of potential {unit}")
 
     # By technology + by country
     col_tech, col_map, col_pivot = st.columns(3, gap="large")
@@ -161,20 +180,23 @@ def _render_utilization(df, sets, geo):
         tech_df["util_pct"] = (
             (tech_df["installed"] / tech_df["potential"] * 100).clip(upper=100).round(1)
         )
+        tech_df["unused_pct"] = 100 - tech_df["util_pct"]
         tech_df = tech_df.sort_values("util_pct", ascending=True)
 
         fig = px.bar(
             tech_df,
-            x="util_pct",
+            x=["util_pct", "unused_pct"],
             y="g",
             orientation="h",
-            labels={"util_pct": f"Utilization (%): {unit_label}", "g": "Technology"},
-            color="util_pct",
-            color_continuous_scale="Greens",
-            range_color=[0, 100],
+            labels={
+                "value": f"Utilization (%): {unit_label}",
+                "g": "Technology",
+                "variable": "",
+            },
+            color_discrete_map={"util_pct": "#2ECC71", "unused_pct": "#e0e0e0"},
             height=600,
         )
-        fig.update_layout(showlegend=False, coloraxis_showscale=False)
+        fig.update_layout(showlegend=False)
         st.plotly_chart(fig)
 
     with col_map:
@@ -206,7 +228,3 @@ def _render_utilization(df, sets, geo):
     with col_pivot:
         st.caption("BY COUNTRY & TECH")
         render_pivot(util_df)
-
-    st.divider()
-    # System total sandkey
-    render_sankey(util_df, unit_label)
