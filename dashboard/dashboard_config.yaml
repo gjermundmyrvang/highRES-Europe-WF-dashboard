@@ -1,0 +1,4 @@
+results_path: work
+
+# Path to GeoJSON file for map visualizations (relative to project root)
+geojson_path: intermediate_data/region/shapes/europe_onshore.geojson
