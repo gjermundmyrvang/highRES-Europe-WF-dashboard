@@ -1,6 +1,6 @@
 import streamlit as st
 import json
-from data_loader import find_work_folders, load_sets
+from data_loader import find_work_folders, load_sets, load_config
 from data.loader import load_scenario
 from ui import render_sidebar
 from ui.tabs import render_overview, render_capacity
@@ -36,12 +36,13 @@ def main():
     if "added_scenarios" not in st.session_state:
         st.session_state.added_scenarios = {}
 
-    scenario_gdx = render_sidebar(find_work_folders("./"))  # Load focused scenario
+    config = load_config()
+    scenario_gdx = render_sidebar(find_work_folders(config["results_path"]))
 
     data = load_scenario(scenario_gdx)
     sets = load_sets(scenario_gdx)
 
-    with open("intermediate_data/region/shapes/europe_onshore.geojson") as f:
+    with open(config["geojson_path"]) as f:
         geo = json.load(f)
 
     tab1, tab2 = st.tabs(["Overview", "Explore Capacity"])
