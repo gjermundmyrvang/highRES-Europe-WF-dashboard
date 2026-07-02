@@ -8,6 +8,7 @@ dependencies:
   - numpy
   - requests
   - shapely
+  - pyyaml
   - pip:
       - streamlit
       - plotly
