@@ -10,7 +10,7 @@ from data.constants import TECH_ICONS
 from ..shared import render_key_data
 
 
-def render_capacity(df, sets, geo):
+def render_capacity(df, sets):
     # ----- CAPACITY --------
     st.title("Capacity Data")
 
@@ -22,7 +22,7 @@ def render_capacity(df, sets, geo):
 
     # ----- UTILIZATION --------
     st.title("Utilization of VRE")
-    _render_utilization(df, sets, geo)
+    _render_utilization(df)
 
 
 def _render_capacity_overview(df, sets):
@@ -115,7 +115,7 @@ def _render_explore_installed_pcap(df, top5):
         st.dataframe(filtered)
 
 
-def _render_utilization(df, sets, geo):
+def _render_utilization(df):
     st.caption("How much of the available VRE potential has the model installed?")
     with st.expander("How utilization is calculated"):
         st.markdown("""

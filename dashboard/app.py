@@ -42,16 +42,13 @@ def main():
     data = load_scenario(scenario_gdx)
     sets = load_sets(scenario_gdx)
 
-    with open(config["geojson_path"]) as f:
-        geo = json.load(f)
-
     tab1, tab2 = st.tabs(["Overview", "Explore Capacity"])
 
     with tab1:
         render_overview(data, sets)
 
     with tab2:
-        render_capacity(data, sets, geo)
+        render_capacity(data, sets)
 
 
 if __name__ == "__main__":
