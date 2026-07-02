@@ -4,23 +4,23 @@ import plotly.express as px
 from data.utilization import calculate_utilization
 from data.country_names import get_country_name
 from data_loader import table
-from .figures import render_capacity_pies, render_pivot
+from .figures import render_capacity_pies, render_pivot, render_bar_chart
 from ui.components import filter_countries
 from data.constants import TECH_ICONS
 from ..shared import render_key_data
 
 
 def render_capacity(df, sets, geo):
+    # ----- CAPACITY --------
     st.title("Capacity Data")
 
-    # Key Capacity Data
     render_key_data(df, sets)
 
-    # Utilization metrics
     _render_capacity_overview(df, sets)
 
     st.divider()
 
+    # ----- UTILIZATION --------
     st.title("Utilization of VRE")
     _render_utilization(df, sets, geo)
 
@@ -52,8 +52,15 @@ def _render_capacity_overview(df, sets):
     with col_util:
         with st.container(border=False):
             st.caption("INSTALLED CAPACITY BY TECHNOLOGY")
+
+            cap_type = st.radio(
+                "Capacity type",
+                options=["Total", "New"],
+                horizontal=True,
+            )
+            var = "var_tot_pcap" if cap_type == "Total" else "var_new_pcap"
             tech_totals = (
-                df["var_tot_pcap"]
+                df[var]
                 .groupby("g")["value"]
                 .sum()
                 .sort_values(ascending=False)
@@ -63,7 +70,7 @@ def _render_capacity_overview(df, sets):
             vre = tech_totals[tech_totals["g"].isin(vre_techs)]
             non_vre = tech_totals[~tech_totals["g"].isin(vre_techs)]
 
-            sub1, sub2 = st.columns(2, border=True)
+            sub1, sub2 = st.columns(2, border=True, gap="large")
             with sub1:
                 st.caption("VRE")
                 for _, row in vre.iterrows():
@@ -142,6 +149,7 @@ def _render_utilization(df, sets, geo):
     total_installed = util_df["installed"].sum().round(1)
     total_potential = util_df["potential"].sum().round(1)
     util_pct = (total_installed / total_potential * 100).round(1)
+    util_pct = float(util_pct) if not np.isnan(util_pct) else 0.0
 
     # VRE aggregated
     total_col, vre_col = st.columns([0.3, 0.7])
@@ -167,12 +175,13 @@ def _render_utilization(df, sets, geo):
                 installed = tech_df.iloc[i]["installed"]
                 potential = tech_df.iloc[i]["potential"]
                 util = (installed / potential * 100).round(1)
+                util = float(util) if not np.isnan(util) else 0.0
                 with vre_cols[i]:
                     st.metric(tech, value=f"{installed.round(1)} {unit_label}")
                     st.progress(float(util / 100), text=f"{util}% of potential {unit}")
 
     # By technology + by country
-    col_tech, col_map, col_pivot = st.columns(3, gap="large")
+    col_tech, col_bar, col_pivot = st.columns(3, gap="large")
 
     with col_tech:
         st.caption("BY TECHNOLOGY")
@@ -199,7 +208,7 @@ def _render_utilization(df, sets, geo):
         fig.update_layout(showlegend=False)
         st.plotly_chart(fig)
 
-    with col_map:
+    with col_bar:
         st.caption("BY COUNTRY")
         country_df = (
             util_df.groupby("z")[["installed", "potential"]].sum().reset_index()
@@ -211,19 +220,7 @@ def _render_utilization(df, sets, geo):
         )
         country_df = country_df.sort_values("util_pct", ascending=True)
 
-        fig = px.bar(
-            country_df,
-            x="util_pct",
-            y="z",
-            orientation="h",
-            labels={"util_pct": f"Utilization (%): {unit_label}", "z": "Country"},
-            color="util_pct",
-            color_continuous_scale="Greens",
-            range_color=[0, 100],
-            height=600,
-        )
-        fig.update_layout(coloraxis_showscale=False)
-        st.plotly_chart(fig)
+        render_bar_chart(country_df, unit_label)
 
     with col_pivot:
         st.caption("BY COUNTRY & TECH")
