@@ -4,7 +4,12 @@ import plotly.express as px
 from data.utilization import calculate_utilization
 from data.country_names import get_country_name
 from data_loader import table
-from .figures import render_capacity_pies, render_pivot, render_bar_chart
+from .figures import (
+    render_capacity_pies,
+    render_pivot,
+    render_country_bar_chart,
+    render_tech_bar_chart,
+)
 from ui.components import filter_countries
 from data.constants import TECH_ICONS
 from ..shared import render_key_data
@@ -192,21 +197,7 @@ def _render_utilization(df):
         tech_df["unused_pct"] = 100 - tech_df["util_pct"]
         tech_df = tech_df.sort_values("util_pct", ascending=True)
 
-        fig = px.bar(
-            tech_df,
-            x=["util_pct", "unused_pct"],
-            y="g",
-            orientation="h",
-            labels={
-                "value": f"Utilization (%): {unit_label}",
-                "g": "Technology",
-                "variable": "",
-            },
-            color_discrete_map={"util_pct": "#2ECC71", "unused_pct": "#e0e0e0"},
-            height=600,
-        )
-        fig.update_layout(showlegend=False)
-        st.plotly_chart(fig)
+        render_tech_bar_chart(tech_df, unit_label)
 
     with col_bar:
         st.caption("BY COUNTRY")
@@ -220,7 +211,7 @@ def _render_utilization(df):
         )
         country_df = country_df.sort_values("util_pct", ascending=True)
 
-        render_bar_chart(country_df, unit_label)
+        render_country_bar_chart(country_df, unit_label)
 
     with col_pivot:
         st.caption("BY COUNTRY & TECH")
