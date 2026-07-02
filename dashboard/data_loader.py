@@ -1,6 +1,7 @@
 import gdxpds
 import pandas as pd
 from pathlib import Path
+import yaml
 
 VARIABLES = [
     "var_tot_pcap",
@@ -9,24 +10,42 @@ VARIABLES = [
     "var_new_pcap_z",
     "var_tot_trans_pcap",
     "costs",
-    "area", 
+    "area",
 ]
 
 SETS = ["hfirst", "hlast", "day", "month", "year", "vre", "z"]
 
-THRESHOLD = 1e-3 # Store only levels (values) > 0.001
+THRESHOLD = 1e-3  # Store only levels (values) > 0.001
 
-def find_work_folders(base_path: str | Path = "..") -> dict[str, dict[str, Path]]:
+
+def load_config():
+    config_path = Path("dashboard/dashboard_config.yaml")
+    if config_path.exists():
+        with open(config_path) as f:
+            return yaml.safe_load(f)
+    return {
+        "results_path": "work_test",
+        "geojson_path": "intermediate_data/region/shapes/europe_onshore.geojson",
+    }
+
+
+def find_work_folders(
+    base_path: str | Path = "work_test",
+) -> dict[str, dict[str, Path]]:
     base_path = Path(base_path)
     result = {}
 
-    for gdx in sorted(base_path.glob("work*/*/results.gdx")):
-        work_folder = gdx.parent.parent.name
+    # Standard
+    for gdx in sorted(base_path.glob("*/results.gdx")):
         scenario = gdx.parent.name
+        result.setdefault(base_path.name, {})[scenario] = gdx
 
-        result.setdefault(work_folder, {})[scenario] = gdx
+    # User added
+    for gdx in sorted(base_path.glob("*.gdx")):
+        result.setdefault(base_path.name, {})[gdx.stem] = gdx
 
     return result
+
 
 def load_results(gdx_path: str | Path) -> dict[str, pd.DataFrame]:
     gdx_path = Path(gdx_path)
@@ -45,11 +64,14 @@ def load_results(gdx_path: str | Path) -> dict[str, pd.DataFrame]:
 
     return results
 
+
 def clean_results(results: dict[str, pd.DataFrame]) -> dict[str, pd.DataFrame]:
     cleaned = {}
     for name, df in results.items():
         df = df.rename(columns={"vre": "g"})
-        dims = [c for c in df.columns if c in ("g", "r", "z", "z_alias", "trans", "vre")]
+        dims = [
+            c for c in df.columns if c in ("g", "r", "z", "z_alias", "trans", "vre")
+        ]
         value_col = next(c for c in df.columns if c.lower() in ("level", "value"))
         cleaned[name] = (
             df[dims + [value_col]]
@@ -58,6 +80,7 @@ def clean_results(results: dict[str, pd.DataFrame]) -> dict[str, pd.DataFrame]:
             .reset_index(drop=True)
         )
     return cleaned
+
 
 def load_sets(gdx_path: str | Path) -> dict:
     gdx_path = Path(gdx_path)
@@ -75,20 +98,16 @@ def load_sets(gdx_path: str | Path) -> dict:
 
             # need to seperate different types of sets
             if df.shape[0] == 1 and len(df.columns) >= 1:
-                sets[s] = {
-                    "type": "scalar",
-                    "value": df.iloc[0, 0]
-                }
+                sets[s] = {"type": "scalar", "value": df.iloc[0, 0]}
             else:
-                sets[s] = {
-                    "type": "table",
-                    "data": df
-                }
+                sets[s] = {"type": "table", "data": df}
 
     return sets
 
+
 def scalar(sets, key):
     return sets[key]["value"]
+
 
 def table(sets, key):
     return sets[key]["data"]
