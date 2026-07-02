@@ -19,7 +19,9 @@ cd highRES-Europe-WF-dashboard
 git checkout feature/results-dashboard
 ```
 
-2. Build and activate dashboard environment:
+2. You also need to manually add or generate the `intermediate_data/` and `shared_input/` folder (not included in the repo ~7GB).
+
+3. Build and activate dashboard environment:
 
 ```bash
 mamba env create -f dashboard/environment.yml
