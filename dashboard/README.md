@@ -11,7 +11,7 @@ Status: Proof of concept done. Dashboard runs end-to-end via Snakemake or direct
 
 ## How to run this branch
 
-1. Clone the fork and check out the branch:
+**1. Clone the fork and check out the branch:**
 
 ```bash
 git clone https://github.com/gjermundmyrvang/highRES-Europe-WF-dashboard.git
@@ -19,21 +19,28 @@ cd highRES-Europe-WF-dashboard
 git checkout feature/results-dashboard
 ```
 
-2. You also need to manually add or generate the `intermediate_data/` and `shared_input/` folder (not included in the repo ~7GB).
+**2. Add required data folders** (not included in the repo, ~7GB):
 
-3. Build and activate dashboard environment:
+- `intermediate_data/` — contains GeoJSON shape files used for map visualizations
+- `shared_input/` — shared model input data
+
+**3. Build and activate the dashboard environment:**
 
 ```bash
 mamba env create -f dashboard/environment.yml
-```
-
-```bash
 mamba activate highres-dashboard
 ```
 
-### 3. Run the dashboard
+**4. Configure the dashboard** (optional):
 
-From the project root, start the Streamlit dashboard:
+Edit `dashboard/dashboard_config.yaml` to point to your results folder and GeoJSON path:
+
+```yaml
+results_path: work # folder containing scenario subfolders with results.gdx
+geojson_path: intermediate_data/region/shapes/europe_onshore.geojson
+```
+
+**5. Run the dashboard** from the project root:
 
 ```bash
 streamlit run dashboard/app.py
@@ -43,37 +50,33 @@ streamlit run dashboard/app.py
 
 ### 4. Switching scenarios
 
-By default, `data_loader.py` loads the pre-installed **dummy scenario** located at:
+The dashboard supports two folder structures:
+
+**Standard:** each scenario is a subfolder containing `results.gdx` (as created from running the model):
 
 ```
-work_test/BASE_2010_nuts2
+work/
+└── BASE_2010_nuts2/
+    └── results.gdx
 ```
 
-To use other scenarios, there are two options:
+**Custom:** GDX files named after the scenario (or other names), placed directly in the results folder:
 
-#### Option 1: Load a custom scenario folder manually
+```
+custom_folder/
+├── BASE_2010_nuts2_high_high.gdx
+└── BASE_2010_nuts2_high_medium.gdx
+```
 
-- Prepare a folder containing scenario(s) `.gdx` files
-- Make sure the folder is accessible from the project
-- Open the running Streamlit dashboard
-- Enter or select the path to that folder in the sidebar
-- Switch the dropdown to the **added** folder so its `.gdx` files are loaded
+Set `results_path` in `dashboard_config.yaml` to point to either structure. You can also add extra scenario folders at runtime via the sidebar ("Add other scenarios").
 
-#### Option 2: Run a full new scenario
-
-Update or set your configuration in `config/config_ci.yaml`, then run:
+To generate new scenarios, run the full Snakemake pipeline:
 
 ```bash
 snakemake -c all --configfile config/config_ci.yaml
 ```
 
-This will:
-
-- execute the full pipeline
-- generate `results.gdx`
-- automatically open the Streamlit dashboard in your browser
-
-Stop the dashboard with `Ctrl + C`.
+This executes the full pipeline, generates `results.gdx`, and automatically opens the dashboard. Stop with `Ctrl+C`.
 
 ## Things to fix/improve
 
