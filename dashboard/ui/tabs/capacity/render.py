@@ -19,7 +19,7 @@ def render_capacity(df, sets):
     # ----- CAPACITY --------
     st.title("Capacity Data")
 
-    render_key_data(df, sets)
+    render_key_data(df)
 
     _render_capacity_overview(df, sets)
 

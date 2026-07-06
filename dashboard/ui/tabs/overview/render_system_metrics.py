@@ -29,7 +29,7 @@ def render_system_metrics(data, sets):
 
     # Capacity Overview
     st.subheader("Installed Capacity")
-    render_key_data(data, sets)
+    render_key_data(data)
 
     st.divider()
 
