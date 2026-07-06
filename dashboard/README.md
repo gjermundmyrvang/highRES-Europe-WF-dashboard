@@ -1,13 +1,6 @@
 # highRES Dashboard
 
-Status: Proof of concept done. Dashboard runs end-to-end via Snakemake or directly with streamlit command.
-
-## Whats done
-
-- Streamlit dashboard in `dashboard/app.py`
-- Loads results from a scenario's `results.gdx` using `data_loader.py`
-- `app.py` renders the different components like sidebar and different charts
-- The code for rendering the UI-components like the different plots live in the ui folder
+This dashboard is designed for users of the highRES model to provide an overview of one or more model results. It's primary objective is to facilitate the communication of key variables from model-generated scenarios to various stakeholders.
 
 ## How to run this branch
 
@@ -48,7 +41,7 @@ streamlit run dashboard/app.py
 
 ---
 
-### 4. Switching scenarios
+### Switching scenarios
 
 The dashboard supports two folder structures:
 
@@ -77,17 +70,3 @@ snakemake -c all --configfile config/config_ci.yaml
 ```
 
 This executes the full pipeline, generates `results.gdx`, and automatically opens the dashboard. Stop with `Ctrl+C`.
-
-## Things to fix/improve
-
-- Path to `intermediate_data/.../europe_onshore.geojson` is hardcoded relative
-  to project root. Will break if run from elsewhere.
-
-## Questions for further work
-
-- gen_cap2area --> is this the values for mapping GW to Km2?
-- Structure of dashboard, a tool where you manually add scenarios to a designated folder or either manually + new step in snakefile so result gdx scenarios also automatically gets moved inside this folder
-- Visualizing costs, what tables are important and what makes sense to show?
-- Visualizing transmissions, both total and hourly, best structure for this?
-- Splitview with multiple scenarios, relevant feature?
-- EN-Roads scenario playground, relevant future feature?
