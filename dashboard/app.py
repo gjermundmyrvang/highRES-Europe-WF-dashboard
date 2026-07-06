@@ -1,9 +1,12 @@
 import streamlit as st
-import json
-from data_loader import find_work_folders, load_sets, load_config
+from data_loader import (
+    load_sets,
+    load_config,
+    load_standard_scenarios,
+)
 from data.loader import load_scenario
 from ui import render_sidebar
-from ui.tabs import render_overview, render_capacity
+from ui.tabs import render_overview, render_capacity, render_scenarios
 
 # ---------- PAGE SETUP ------------
 st.markdown(
@@ -37,18 +40,28 @@ def main():
         st.session_state.added_scenarios = {}
 
     config = load_config()
-    scenario_gdx = render_sidebar(find_work_folders(config["results_path"]))
+
+    # Load standard scenarios from config path
+    standard = load_standard_scenarios(config["results_path"])
+
+    # Merge with any user-added custom scenarios
+    all_scenarios = {**standard, **st.session_state.added_scenarios}
+
+    scenario_gdx = render_sidebar(all_scenarios)
 
     data = load_scenario(scenario_gdx)
     sets = load_sets(scenario_gdx)
 
-    tab1, tab2 = st.tabs(["Overview", "Explore Capacity"])
+    tab1, tab2, tab3 = st.tabs(["Overview", "Explore Capacity", "Scenarios"])
 
     with tab1:
-        render_overview(data, sets)
+        render_overview(data, sets, scenario_gdx)
 
     with tab2:
         render_capacity(data, sets)
+
+    with tab3:
+        render_scenarios(all_scenarios)
 
 
 if __name__ == "__main__":
