@@ -165,7 +165,10 @@ def _render_utilization(df):
                 "Total VRE",
                 f"{total_installed:,.0f} {unit_label}",
             )
-            st.progress(float(util_pct / 100), text=f"{util_pct}% of potential {unit}")
+            st.progress(
+                float(util_pct / 100),
+                text=f"{util_pct}% of potential: {total_potential:,.0f} {unit}",
+            )
 
     with vre_col:
         st.subheader("By new VRE")
@@ -182,8 +185,11 @@ def _render_utilization(df):
                 util = (installed / potential * 100).round(1)
                 util = float(util) if not np.isnan(util) else 0.0
                 with vre_cols[i]:
-                    st.metric(tech, value=f"{installed.round(1)} {unit_label}")
-                    st.progress(float(util / 100), text=f"{util}% of potential {unit}")
+                    st.metric(tech, value=f"{installed:,.0f} {unit_label}")
+                    st.progress(
+                        float(util / 100),
+                        text=f"{util}% of potential: {potential:,.0f} {unit}",
+                    )
 
     # By technology + by country
     col_tech, col_bar, col_pivot = st.columns(3, gap="large")
