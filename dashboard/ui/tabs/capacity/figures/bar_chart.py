@@ -3,7 +3,7 @@ import plotly.express as px
 
 
 def render_country_bar_chart(df, unit_label):
-    mean = df["util_pct"].mean()
+    mean = df["util_pct"].mean().round()
     show_mean = st.radio("Show mean?", options=["Yes", "No"], horizontal=True)
     fig = px.bar(
         df,
