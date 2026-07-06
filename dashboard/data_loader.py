@@ -29,24 +29,6 @@ def load_config():
     }
 
 
-def find_work_folders(
-    base_path: str | Path = "work_test",
-) -> dict[str, dict[str, Path]]:
-    base_path = Path(base_path)
-    result = {}
-
-    # Standard
-    for gdx in sorted(base_path.glob("*/results.gdx")):
-        scenario = gdx.parent.name
-        result.setdefault(base_path.name, {})[scenario] = gdx
-
-    # User added
-    for gdx in sorted(base_path.glob("*.gdx")):
-        result.setdefault(base_path.name, {})[gdx.stem] = gdx
-
-    return result
-
-
 def load_standard_scenarios(base_path: str | Path) -> dict[str, Path]:
     # Looks for model-generated scenarios: base_path/scenario_name/results.gdx
     base_path = Path(base_path)
