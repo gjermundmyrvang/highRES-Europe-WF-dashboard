@@ -2,8 +2,8 @@ import streamlit as st
 from data.capacity import capacity_summary
 
 
-def render_key_data(df, sets):
-    df = capacity_summary(df, sets)
+def render_key_data(df):
+    df = capacity_summary(df)
 
     total_installed = df["total_installed"]
     total_vre = df["total_vre"]
