@@ -47,6 +47,18 @@ def find_work_folders(
     return result
 
 
+def load_standard_scenarios(base_path: str | Path) -> dict[str, Path]:
+    # Looks for model-generated scenarios: base_path/scenario_name/results.gdx
+    base_path = Path(base_path)
+    return {gdx.parent.name: gdx for gdx in sorted(base_path.glob("*/results.gdx"))}
+
+
+def load_custom_scenarios(folder_path: str | Path) -> dict[str, Path]:
+    # Looks for flat GDX files: folder_path/scenario_name.gdx
+    folder_path = Path(folder_path)
+    return {gdx.stem: gdx for gdx in sorted(folder_path.glob("*.gdx"))}
+
+
 def load_results(gdx_path: str | Path) -> dict[str, pd.DataFrame]:
     gdx_path = Path(gdx_path)
     if not gdx_path.exists():
