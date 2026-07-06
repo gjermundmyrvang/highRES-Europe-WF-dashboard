@@ -1,24 +1,15 @@
 import streamlit as st
 from pathlib import Path
+from data_loader import load_custom_scenarios
 
 
-def render_sidebar(work_folders: dict):
+def render_sidebar(all_scenarios: dict):
     with st.sidebar:
         st.header(":material/folder_managed: Scenario Settings")
 
-        all_folders = dict(work_folders)
-        if st.session_state.added_scenarios:
-            all_folders["added"] = st.session_state.added_scenarios
-
-        selected_folder = st.selectbox(
-            "Folder",
-            options=list(all_folders.keys()),
-        )
-
-        scenarios = all_folders[selected_folder]
         selected_scenario = st.selectbox(
             "Scenario",
-            options=list(scenarios.keys()),
+            options=list(all_scenarios.keys()),
         )
 
         st.subheader(":material/create_new_folder: Add other scenarios")
@@ -28,7 +19,7 @@ def render_sidebar(work_folders: dict):
             if not path.exists():
                 st.error("Folder not found.")
             else:
-                found = {p.stem: p for p in path.glob("*.gdx")}
+                found = load_custom_scenarios(path)
                 if not found:
                     st.warning("No GDX files found in that folder.")
                 else:
@@ -36,4 +27,4 @@ def render_sidebar(work_folders: dict):
                     st.success(f"Added {len(found)} scenario(s).")
                     st.rerun()
 
-        return scenarios[selected_scenario]
+        return all_scenarios[selected_scenario]
