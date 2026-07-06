@@ -26,3 +26,5 @@ TECH_COLORS = {
     "BiomassCCS": "#6B4F3A",
     "SynCon": "#9B59B6",
 }
+
+VRE_TECHS = {"Solar", "Windonshore", "Windoffshore", "WindoffshoreFloat"}

@@ -1,13 +1,12 @@
-from data_loader import table
+from data.constants import VRE_TECHS
 
-def capacity_summary(df, sets):
+
+def capacity_summary(df):
     total_all = df["var_tot_pcap"]
     new_all = df["var_new_pcap"]
 
-    vre_tech = table(sets, "vre")
-
-    installed_vre = total_all[total_all["g"].isin(vre_tech["g"])]
-    installed_new_vre = new_all[new_all["g"].isin(vre_tech["g"])]
+    installed_vre = total_all[total_all["g"].isin(VRE_TECHS)]
+    installed_new_vre = new_all[new_all["g"].isin(VRE_TECHS)]
 
     return {
         "total_installed": total_all["value"].sum().round(0),
