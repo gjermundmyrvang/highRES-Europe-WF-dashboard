@@ -15,8 +15,7 @@ CAPACITY_TO_AREA = {
 
 def calculate_utilization(new_vre_z, potential_z, use_area=False):
     potential_z = potential_z[potential_z["g"] != "HydroRoR"]  # Exclude (INF+)
-    vre_techs = set(potential_z["g"].unique())  # area-table only has VRE techs
-    installed_vre = new_vre_z[new_vre_z["g"].isin(vre_techs)]
+    installed_vre = new_vre_z[new_vre_z["g"] != "HydroRoR"]  # Exclude here also
 
     installed_agg = (
         installed_vre.groupby(["z", "g"], as_index=False)["value"]
