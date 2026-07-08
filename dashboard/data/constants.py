@@ -28,4 +28,4 @@ TECH_COLORS = {
     "SynCon": "#9B59B6",
 }
 
-VRE_TECHS = {"Solar", "Windonshore", "Windoffshore", "WindoffshoreFloat"}
+VRE_TECHS = {"Solar", "Windonshore", "Windoffshore", "WindoffshoreFloat", "HydroRoR"}
