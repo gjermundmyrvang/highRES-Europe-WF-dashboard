@@ -24,7 +24,12 @@ def render_sidebar(all_scenarios: dict):
                     st.warning("No GDX files found in that folder.")
                 else:
                     st.session_state.added_scenarios.update(found)
-                    st.success(f"Added {len(found)} scenario(s).")
+                    st.session_state.scan_success = f"Added {len(found)} scenario(s)."
                     st.rerun()
+
+        # Workaround to display message after `st.rerun()` fires
+        if "scan_success" in st.session_state:
+            st.success(st.session_state.scan_success)
+            del st.session_state.scan_success
 
         return all_scenarios[selected_scenario]
