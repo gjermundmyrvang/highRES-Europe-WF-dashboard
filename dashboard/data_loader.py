@@ -2,6 +2,7 @@ import gdxpds
 import pandas as pd
 from pathlib import Path
 import yaml
+from data.country_names import get_country_name
 
 VARIABLES = [
     "var_tot_pcap",
@@ -73,6 +74,8 @@ def clean_results(results: dict[str, pd.DataFrame]) -> dict[str, pd.DataFrame]:
             .query("value > @THRESHOLD")
             .reset_index(drop=True)
         )
+        if "z" in cleaned[name].columns:
+            cleaned[name]["country_name"] = cleaned[name]["z"].apply(get_country_name)
     return cleaned
 
 
