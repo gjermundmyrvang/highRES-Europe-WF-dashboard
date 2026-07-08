@@ -1,9 +1,9 @@
 import streamlit as st
 import numpy as np
 import plotly.express as px
-from data.utilization import calculate_utilization
+from data.utilization import calculate_utilization, calculate_country_land_use
 from data.country_names import get_country_name
-from data_loader import table
+from data.constants import VRE_TECHS, area_reference
 from .figures import (
     render_capacity_pies,
     render_pivot,
@@ -13,6 +13,12 @@ from .figures import (
 from ui.components import filter_countries
 from data.constants import TECH_ICONS
 from ..shared import render_key_data
+from .utilization import (
+    render_utilization_header,
+    render_vre_summary,
+    render_breakdown,
+    render_land_usage,
+)
 
 
 def render_capacity(df, sets):
@@ -26,18 +32,18 @@ def render_capacity(df, sets):
     st.divider()
 
     # ----- UTILIZATION --------
-    st.title("Utilization of VRE")
+    st.title("Renewable Energy Deployment")
     _render_utilization(df)
 
 
 def _render_capacity_overview(df, sets):
-    all = (
-        df["var_tot_pcap_z"]
-        .groupby("z")["value"]
-        .sum()
-        .sort_values(ascending=False)
-        .reset_index()
+    cap_type = st.radio(
+        "Capacity type",
+        options=["Total", "New"],
+        horizontal=True,
     )
+    var = "var_tot_pcap_z" if cap_type == "Total" else "var_new_pcap_z"
+    all = df[var].groupby("z")["value"].sum().sort_values(ascending=False).reset_index()
     # Top 5 countries by total installed
     top5 = all.head(5)
 
@@ -56,13 +62,7 @@ def _render_capacity_overview(df, sets):
 
     with col_util:
         with st.container(border=False):
-            st.caption("INSTALLED CAPACITY BY TECHNOLOGY")
-
-            cap_type = st.radio(
-                "Capacity type",
-                options=["Total", "New"],
-                horizontal=True,
-            )
+            st.caption(f"{cap_type.upper()} INSTALLED CAPACITY BY TECHNOLOGY")
             var = "var_tot_pcap" if cap_type == "Total" else "var_new_pcap"
             tech_totals = (
                 df[var]
@@ -71,39 +71,30 @@ def _render_capacity_overview(df, sets):
                 .sort_values(ascending=False)
                 .reset_index()
             )
-            vre_techs = table(sets, "vre")["g"].tolist()
-            vre = tech_totals[tech_totals["g"].isin(vre_techs)]
-            non_vre = tech_totals[~tech_totals["g"].isin(vre_techs)]
+            vre = tech_totals[tech_totals["g"].isin(VRE_TECHS)]
+            non_vre = tech_totals[~tech_totals["g"].isin(VRE_TECHS)]
 
             sub1, sub2 = st.columns(2, border=True, gap="large")
             with sub1:
-                st.caption("VRE")
+                st.caption("Renewable Technologies")
                 for _, row in vre.iterrows():
                     icon = TECH_ICONS.get(row["g"], ":material/category:")
                     st.metric(f"{icon} {row['g']}", f"{row['value']:.1f} GW")
             with sub2:
-                st.caption("Other")
+                st.caption("Other Technologies")
                 for _, row in non_vre.iterrows():
                     icon = TECH_ICONS.get(row["g"], ":material/category:")
                     st.metric(f"{icon} {row['g']}", f"{row['value']:.1f} GW")
 
     # Explore installed pcap
-    _render_explore_installed_pcap(df, top5)
+    _render_explore_installed_pcap(df, cap_type, top5)
 
 
-def _render_explore_installed_pcap(df, top5):
+def _render_explore_installed_pcap(df, cap_type, top5):
     st.subheader("Whats been installed by countries?")
 
-    tot_z = df["var_tot_pcap_z"]
-    new_z = df["var_new_pcap_z"]
-
-    selected_table = st.radio(
-        "Select focused table",
-        options=["`var_tot_pcap_z`", "`var_new_pcap_z`"],
-        horizontal=True,
-    )
-
-    focused = tot_z if selected_table == "var_tot_pcap_z" else new_z
+    var = "var_tot_pcap_z" if cap_type == "Total" else "var_new_pcap_z"
+    focused = df[var]
 
     top5list = top5["z"].tolist()
 
@@ -121,29 +112,8 @@ def _render_explore_installed_pcap(df, top5):
 
 
 def _render_utilization(df):
-    st.caption("How much of the available VRE potential has the model installed?")
-    with st.expander("How utilization is calculated"):
-        st.markdown("""
-        **Installed capacity** comes from `var_new_pcap_z` --> only newly built VRE technologies (Solar, Wind Onshore, Wind Offshore).
-        
-        **Available potential** comes from the `area` dataset, which reports the maximum installable capacity per country and technology based on land availability and resource quality.
-        
-        - `HydroRoR` is excluded as its potential is stored as `+INF`
-        - **Power (GW)**: direct comparison of installed vs potential capacity
-        - **Area (km²)**: capacity values converted using technology-specific factors:
-            - Solar: 1 km² can support 0.04 GW
-            - Wind Onshore: 1 km² can support 0.0024 GW
-            - Wind Offshore: 1 km² can support 0.005 GW
-        """)
-
-    unit = st.radio(
-        "View utilization in",
-        options=["Power (GW)", "Area (km²)"],
-        horizontal=True,
-    )
-
-    use_area = unit == "Area (km²)"
-    unit_label = "km²" if use_area else "GW"
+    # Header
+    unit, use_area, show_land_pct, unit_label = render_utilization_header()
 
     # Data preparation
     potential_z = df["area"].replace([np.inf, -np.inf], np.nan)
@@ -156,69 +126,15 @@ def _render_utilization(df):
     util_pct = (total_installed / total_potential * 100).round(1)
     util_pct = float(util_pct) if not np.isnan(util_pct) else 0.0
 
+    # LAND USAGE
+    if show_land_pct:
+        land_df = calculate_country_land_use(new_vre_z, potential_z)
+        render_land_usage(land_df, util_df, total_installed, total_potential)
+
     # VRE aggregated
-    total_col, vre_col = st.columns([0.3, 0.7])
-    with total_col:
-        st.subheader("Aggregated new VRE")
-        with st.container(border=True):
-            st.metric(
-                "Total VRE",
-                f"{total_installed:,.0f} {unit_label}",
-            )
-            st.progress(
-                float(util_pct / 100),
-                text=f"{util_pct}% of potential: {total_potential:,.0f} {unit}",
-            )
+    render_vre_summary(
+        util_df, total_installed, total_potential, util_pct, unit_label, unit
+    )
 
-    with vre_col:
-        st.subheader("By new VRE")
-        with st.container(border=True):
-            tech_df = (
-                util_df.groupby("g")[["installed", "potential"]].sum().reset_index()
-            )
-            n_vre_cols = len(tech_df["g"])
-            vre_cols = st.columns(n_vre_cols)
-            for i in range(n_vre_cols):
-                tech = tech_df.iloc[i]["g"]
-                installed = tech_df.iloc[i]["installed"]
-                potential = tech_df.iloc[i]["potential"]
-                util = (installed / potential * 100).round(1)
-                util = float(util) if not np.isnan(util) else 0.0
-                with vre_cols[i]:
-                    st.metric(tech, value=f"{installed:,.0f} {unit_label}")
-                    st.progress(
-                        float(util / 100),
-                        text=f"{util}% of potential: {potential:,.0f} {unit}",
-                    )
-
-    # By technology + by country
-    col_tech, col_bar, col_pivot = st.columns(3, gap="large")
-
-    with col_tech:
-        st.caption("BY TECHNOLOGY")
-        tech_df = util_df.groupby("g")[["installed", "potential"]].sum().reset_index()
-        tech_df["util_pct"] = (
-            (tech_df["installed"] / tech_df["potential"] * 100).clip(upper=100).round(1)
-        )
-        tech_df["unused_pct"] = 100 - tech_df["util_pct"]
-        tech_df = tech_df.sort_values("util_pct", ascending=True)
-
-        render_tech_bar_chart(tech_df, unit_label)
-
-    with col_bar:
-        st.caption("BY COUNTRY")
-        country_df = (
-            util_df.groupby("z")[["installed", "potential"]].sum().reset_index()
-        )
-        country_df["util_pct"] = (
-            (country_df["installed"] / country_df["potential"] * 100)
-            .clip(upper=100)
-            .round(1)
-        )
-        country_df = country_df.sort_values("util_pct", ascending=True)
-
-        render_country_bar_chart(country_df, unit_label)
-
-    with col_pivot:
-        st.caption("BY COUNTRY & TECH")
-        render_pivot(util_df)
+    # By technology + by country + by both
+    render_breakdown(util_df, unit_label)
