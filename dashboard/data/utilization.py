@@ -46,6 +46,39 @@ def calculate_utilization(new_vre_z, potential_z, use_area=False):
     return df
 
 
+def calculate_utilization_region(new_vre_z, potential_z, use_area=False):
+    potential_z = potential_z[potential_z["g"] != "HydroRoR"]  # Exclude (INF+)
+    installed_vre = new_vre_z[new_vre_z["g"] != "HydroRoR"]  # Exclude here also
+
+    installed_agg = (
+        installed_vre.groupby(["z", "r", "g"], as_index=False)["value"]
+        .sum()
+        .rename(columns={"value": "installed"})  # For code clarity later on
+    )
+
+    potential_agg = (
+        potential_z.groupby(["z", "r", "g"], as_index=False)["value"]
+        .sum()
+        .rename(columns={"value": "potential"})  # For code clarity later on
+    )
+
+    df = potential_agg.merge(installed_agg, on=["z", "r", "g"], how="left")
+    df["installed"] = df["installed"].fillna(0)
+
+    if use_area:
+        df["installed"] = df["installed"] / df["g"].map(CAPACITY_TO_AREA)
+        df["potential"] = df["potential"] / df["g"].map(CAPACITY_TO_AREA)
+
+    # If potential > 0, calculate utilization as installed/potential * 100. Otherwise set it to NaN
+    df["utilization_pct"] = np.where(
+        df["potential"] > 0,
+        (df["installed"] / df["potential"] * 100),
+        np.nan,
+    )
+    df["country_name"] = df["z"].apply(get_country_name)
+    return df
+
+
 def calculate_country_land_use(new_vre_z, potential_z):
     # Calculates installed VRE area as % of total country land area
     util_df = calculate_utilization(new_vre_z, potential_z, use_area=False)
