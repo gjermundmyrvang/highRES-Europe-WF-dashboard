@@ -5,7 +5,9 @@ from data.constants import TECH_ICONS, area_reference
 from ui.components import filter_countries
 
 
-def render_land_usage(land_df, util_df, total_installed, total_potential):
+def render_land_usage(
+    land_df, util_df, util_region_df, total_installed, total_potential
+):
     country_total_area = land_df["country_area_km2"].sum().round(1)
 
     st.subheader("Land Area Context")
@@ -58,12 +60,12 @@ def render_land_usage(land_df, util_df, total_installed, total_potential):
         st.plotly_chart(fig)
 
     with col_detail:
-        _render_country_detail(land_df, util_df)
+        _render_country_detail(land_df, util_df, util_region_df)
 
     st.divider()
 
 
-def _render_country_detail(land_df, util_df):
+def _render_country_detail(land_df, util_df, util_region_df):
     selected_country = st.selectbox(
         "Select country for breakdown",
         options=[None] + sorted(land_df["country_name"].unique()),
@@ -118,3 +120,28 @@ def _render_country_detail(land_df, util_df):
 
     if excluded:
         st.info(f"Not shown (no installed capacity): {', '.join(sorted(excluded))}")
+
+    # Regional Data
+    st.caption("Land occupied by newly installed renewables in regions:")
+    region_df = util_region_df[
+        util_region_df["country_name"] == selected_country
+    ].copy()
+
+    region_totals = region_df.groupby("r")["installed"].sum()
+    inactive_regions = region_totals[region_totals == 0].index.tolist()
+    if inactive_regions:
+        st.info("Not shown (no installed capacity): " + ", ".join(inactive_regions))
+    active_df = region_df[region_df["r"].isin(region_totals[region_totals > 0].index)]
+    table = active_df.pivot_table(
+        index="r",
+        columns="g",
+        values="installed",
+        aggfunc="sum",
+        fill_value=0,
+    )
+
+    table["Total"] = table.sum(axis=1)
+
+    table = table.sort_values("Total", ascending=False)
+
+    st.dataframe(table.style.format("{:.1f}"))
