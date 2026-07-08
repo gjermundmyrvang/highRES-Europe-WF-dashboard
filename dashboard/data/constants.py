@@ -10,6 +10,7 @@ TECH_ICONS = {
     "BiomassCCS": ":material/grass:",
     "NuclearEPR": ":material/radio_button_checked:",
     "SynCon": ":material/settings_input_component:",
+    "WindoffshoreFloat": ":material/air:",
 }
 
 TECH_COLORS = {
