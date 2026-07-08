@@ -3,7 +3,7 @@ import streamlit as st
 
 def render_utilization_header():
     st.caption("How much of the available renewable potential did the model build?")
-    with st.expander("How utilization is calculated"):
+    with st.expander("How utilization is calculated", expanded=True):
         st.markdown("""
         **Installed capacity** comes from `var_new_pcap_z` --> only newly built VRE technologies (Solar, Wind Onshore, Wind Offshore).
         
