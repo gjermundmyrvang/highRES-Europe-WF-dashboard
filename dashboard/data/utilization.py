@@ -1,5 +1,6 @@
 import numpy as np
 from data.constants import COUNTRY_AREA_KM2
+from data.country_names import get_country_name
 
 # TODO: This is different between techs?
 AREA_FACTOR = 2.4  # 1 km² produces 2.4 GW?
@@ -42,7 +43,7 @@ def calculate_utilization(new_vre_z, potential_z, use_area=False):
         (df["installed"] / df["potential"] * 100),
         np.nan,
     )
-
+    df["country_name"] = df["z"].apply(get_country_name)
     return df
 
 
@@ -73,6 +74,7 @@ def calculate_country_land_use(new_vre_z, potential_z):
         country_df["installed_area"] / country_df["country_area_km2"] * 100
     ).round(2)
 
+    country_df["country_name"] = country_df["z"].apply(get_country_name)
     return country_df
 
 
