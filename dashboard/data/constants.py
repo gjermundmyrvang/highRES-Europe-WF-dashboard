@@ -61,3 +61,27 @@ COUNTRY_AREA_KM2 = {
     "SK": 49035,
     "UK": 243610,
 }
+
+# TODO: Find better references?
+REFERENCE_AREAS = {
+    "Luxembourg": 2586,
+    "Greater London": 1572,
+    "Berlin": 892,
+    "New York City": 783,
+    "Oslo": 454,
+    "Paris": 105,
+    "Monaco": 2,
+}
+
+
+def area_reference(km2: float) -> str:
+    if km2 <= 0:
+        return ""
+    closest = min(REFERENCE_AREAS, key=lambda x: abs(REFERENCE_AREAS[x] - km2))
+    ratio = km2 / REFERENCE_AREAS[closest]
+    if ratio >= 1.5:
+        return f"≈ {round(ratio)}× the size of {closest}"
+    elif ratio <= 0.5:
+        return f"≈ {round(1/ratio)}× smaller than {closest}"
+    else:
+        return f"≈ the size of {closest}"
