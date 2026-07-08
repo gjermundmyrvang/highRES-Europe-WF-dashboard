@@ -8,9 +8,12 @@ def render_country_bar_chart(df, unit_label):
     fig = px.bar(
         df,
         x="util_pct",
-        y="z",
+        y="country_name",
         orientation="h",
-        labels={"util_pct": f"Utilization (%): {unit_label}", "z": "Country"},
+        labels={
+            "util_pct": f"Utilization (%): {unit_label}",
+            "country_name": "Country",
+        },
         color="util_pct",
         color_continuous_scale="Greens",
         range_color=[0, 100],

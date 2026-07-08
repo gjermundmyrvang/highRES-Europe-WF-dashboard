@@ -7,7 +7,7 @@ DEFAULT_COLOR = "#cccccc"
 
 
 def render_capacity_pies(df, cols: int = 4):
-    countries = sorted(set(df["z"]))
+    countries = sorted(set(df["country_name"]))
     n = len(countries)
     rows = -(-n // cols)
 
@@ -15,14 +15,14 @@ def render_capacity_pies(df, cols: int = 4):
         rows=rows,
         cols=cols,
         specs=[[{"type": "pie"}] * cols for _ in range(rows)],
-        subplot_titles=[get_country_name(c) for c in countries],
+        subplot_titles=list(countries),
     )
 
     for i, country in enumerate(countries):
         row = i // cols + 1
         col = i % cols + 1
 
-        sub = df[df["z"] == country].sort_values("value", ascending=False)
+        sub = df[df["country_name"] == country].sort_values("value", ascending=False)
         colors = [TECH_COLORS.get(t, DEFAULT_COLOR) for t in sub["g"]]
 
         fig.add_trace(

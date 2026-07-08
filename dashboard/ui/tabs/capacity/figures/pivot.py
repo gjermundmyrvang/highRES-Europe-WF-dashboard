@@ -8,7 +8,9 @@ def render_pivot(df):
     filtered_pivot = filter_countries(
         df, [], "filter_pivot"
     )  # '[]' returns just all countries
-    pivot = filtered_pivot.pivot(index="z", columns="g", values="utilization_pct")
+    pivot = filtered_pivot.pivot(
+        index="country_name", columns="g", values="utilization_pct"
+    )
 
     # Heatmap viz for country tech combinations
     fig = px.imshow(
