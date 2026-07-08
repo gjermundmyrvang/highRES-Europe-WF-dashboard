@@ -1,14 +1,10 @@
 import streamlit as st
 import numpy as np
-import plotly.express as px
 from data.utilization import calculate_utilization, calculate_country_land_use
 from data.country_names import get_country_name
-from data.constants import VRE_TECHS, area_reference
+from data.constants import VRE_TECHS
 from .figures import (
     render_capacity_pies,
-    render_pivot,
-    render_country_bar_chart,
-    render_tech_bar_chart,
 )
 from ui.components import filter_countries
 from data.constants import TECH_ICONS
