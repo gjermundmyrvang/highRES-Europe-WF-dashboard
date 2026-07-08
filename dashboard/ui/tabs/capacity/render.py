@@ -1,6 +1,10 @@
 import streamlit as st
 import numpy as np
-from data.utilization import calculate_utilization, calculate_country_land_use
+from data.utilization import (
+    calculate_utilization,
+    calculate_utilization_region,
+    calculate_country_land_use,
+)
 from data.country_names import get_country_name
 from data.constants import VRE_TECHS
 from .figures import (
@@ -134,6 +138,9 @@ def _render_utilization(df):
     new_vre_z = df["var_new_vre_pcap_r"]
 
     util_df = calculate_utilization(new_vre_z, potential_z, use_area=use_area)
+    util_region_df = calculate_utilization_region(
+        new_vre_z, potential_z, use_area=use_area
+    )
 
     total_installed = util_df["installed"].sum().round(1)
     total_potential = util_df["potential"].sum().round(1)
@@ -143,7 +150,9 @@ def _render_utilization(df):
     # LAND USAGE
     if show_land_pct:
         land_df = calculate_country_land_use(new_vre_z, potential_z)
-        render_land_usage(land_df, util_df, total_installed, total_potential)
+        render_land_usage(
+            land_df, util_df, util_region_df, total_installed, total_potential
+        )
 
     # VRE aggregated
     render_vre_summary(
