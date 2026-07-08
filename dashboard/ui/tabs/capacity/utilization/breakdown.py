@@ -19,7 +19,9 @@ def render_breakdown(util_df, unit_label):
     with col_bar:
         st.caption("BY COUNTRY")
         country_df = (
-            util_df.groupby("z")[["installed", "potential"]].sum().reset_index()
+            util_df.groupby(["z", "country_name"])[["installed", "potential"]]
+            .sum()
+            .reset_index()
         )
         country_df["util_pct"] = (
             (country_df["installed"] / country_df["potential"] * 100)

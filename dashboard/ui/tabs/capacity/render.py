@@ -39,7 +39,13 @@ def _render_capacity_overview(df, sets):
         horizontal=True,
     )
     var = "var_tot_pcap_z" if cap_type == "Total" else "var_new_pcap_z"
-    all = df[var].groupby("z")["value"].sum().sort_values(ascending=False).reset_index()
+    all = (
+        df[var]
+        .groupby("country_name")["value"]
+        .sum()
+        .sort_values(ascending=False)
+        .reset_index()
+    )
     # Top 5 countries by total installed
     top5 = all.head(5)
 
@@ -50,7 +56,7 @@ def _render_capacity_overview(df, sets):
             st.caption("TOP 5 COUNTRIES BY INSTALLED CAPACITY")
             for i, row in top5.iterrows():
                 st.metric(
-                    f"{i + 1}.{get_country_name(row['z'])}",
+                    f"{i + 1}.{row['country_name']}",
                     f"{row['value']:.0f} GW",
                 )
             with st.expander(":material/public: &nbsp; See all"):
@@ -87,16 +93,28 @@ def _render_capacity_overview(df, sets):
 
 
 def _render_explore_installed_pcap(df, cap_type, top5):
-    st.subheader("Whats been installed by countries?")
+    st.subheader("What's been installed by countries?")
+
+    tech_filter = st.radio(
+        "Technologies",
+        options=["All", "Renewables only"],
+        horizontal=True,
+    )
 
     var = "var_tot_pcap_z" if cap_type == "Total" else "var_new_pcap_z"
     focused = df[var]
 
-    top5list = top5["z"].tolist()
+    show_vre_only = tech_filter == "Renewables only"
+    if show_vre_only:
+        df_filtered = focused[focused["g"].isin(VRE_TECHS)]
+    else:
+        df_filtered = focused
+
+    top5list = top5["country_name"].tolist()
 
     col1, col2 = st.columns([3, 1])
     with col1:
-        filtered = filter_countries(focused, top5list, key="filter_tot_pcap")
+        filtered = filter_countries(df_filtered, top5list, key="filter_tot_pcap")
     with col2:
         cols = st.slider("Columns", min_value=1, max_value=6, value=5)
 

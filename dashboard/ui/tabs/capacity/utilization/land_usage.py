@@ -37,14 +37,14 @@ def render_land_usage(land_df, util_df, total_installed, total_potential):
         fig = px.bar(
             land_usage_filtered,
             x=["installed_area", "remaining_potential", "remaining_country"],
-            y="z",
+            y="country_name",
             orientation="h",
             color_discrete_map={
                 "installed_area": "#2ECC71",
                 "remaining_potential": "#A8D5B5",
                 "remaining_country": "#E8E8E8",
             },
-            labels={"value": "Area (km²)", "z": "Country", "variable": ""},
+            labels={"value": "Area (km²)", "country_name": "Country", "variable": ""},
             height=700,
         )
         fig.update_layout(legend=dict(orientation="h", y=-0.1), barmode="stack")
@@ -66,27 +66,25 @@ def render_land_usage(land_df, util_df, total_installed, total_potential):
 def _render_country_detail(land_df, util_df):
     selected_country = st.selectbox(
         "Select country for breakdown",
-        options=[None] + sorted(land_df["z"].unique()),
+        options=[None] + sorted(land_df["country_name"].unique()),
         format_func=lambda x: "Select a country..." if x is None else x,
     )
 
     if not selected_country:
         return
 
-    country_tech_df = util_df[util_df["z"] == selected_country].copy()
+    country_tech_df = util_df[util_df["country_name"] == selected_country].copy()
     country_tech_df = country_tech_df[
         (country_tech_df["installed"] > 0) & (country_tech_df["installed"].notna())
     ]
 
-    all_techs = set(util_df[util_df["z"] == selected_country]["g"])
+    all_techs = set(util_df[util_df["country_name"] == selected_country]["g"])
     shown_techs = set(country_tech_df["g"])
     excluded = all_techs - shown_techs
 
-    country_row = land_df[land_df["z"] == selected_country].iloc[0]
-    country_name = get_country_name(selected_country)
+    country_row = land_df[land_df["country_name"] == selected_country].iloc[0]
 
-    st.subheader(country_name)
-    st.divider()
+    st.subheader(selected_country)
 
     col1, col2, col3 = st.columns(3, border=True)
     col1.metric(
@@ -106,7 +104,7 @@ def _render_country_detail(land_df, util_df):
         help="Land actually occupied by newly installed VRE",
     )
 
-    st.caption(f"Land occupied by newly installed renewables in {country_name}:")
+    st.caption(f"Land occupied by newly installed renewables in {selected_country}:")
 
     for col, (_, row) in zip(
         st.columns(len(country_tech_df), border=True), country_tech_df.iterrows()
