@@ -1,4 +1,5 @@
 import numpy as np
+from data.constants import COUNTRY_AREA_KM2
 
 # TODO: This is different between techs?
 AREA_FACTOR = 2.4  # 1 km² produces 2.4 GW?
@@ -45,24 +46,34 @@ def calculate_utilization(new_vre_z, potential_z, use_area=False):
     return df
 
 
-def calculate_area_utilization(df):
-    df["potential_area"] = df["potential"] / AREA_FACTOR
-    df["installed_area"] = df["installed"] / AREA_FACTOR
-    df["unused_area"] = df["potential_area"] - df["installed_area"]
+def calculate_country_land_use(new_vre_z, potential_z):
+    # Calculates installed VRE area as % of total country land area
+    util_df = calculate_utilization(new_vre_z, potential_z, use_area=False)
 
-    country_area = (
-        df.groupby("z")
-        .agg(
-            potential_area=("potential_area", "sum"),
-            installed_area=("installed_area", "sum"),
-        )
-        .reset_index()
+    # Convert installed GW to km²
+    util_df["installed_area"] = util_df["installed"] / util_df["g"].map(
+        CAPACITY_TO_AREA
+    )
+    util_df["potential_area"] = util_df["potential"] / util_df["g"].map(
+        CAPACITY_TO_AREA
     )
 
-    country_area["utilization_pct"] = (
-        country_area["installed_area"] / country_area["potential_area"] * 100
+    # Aggregate to country level
+    country_df = (
+        util_df.groupby("z")[["installed_area", "potential_area"]].sum().reset_index()
     )
-    return country_area
+    country_df["country_area_km2"] = country_df["z"].map(COUNTRY_AREA_KM2)
+    country_df["remaining_potential"] = (
+        country_df["potential_area"] - country_df["installed_area"]
+    )
+    country_df["remaining_country"] = (
+        country_df["country_area_km2"] - country_df["potential_area"]
+    )
+    country_df["land_use_pct"] = (
+        country_df["installed_area"] / country_df["country_area_km2"] * 100
+    ).round(2)
+
+    return country_df
 
 
 def aggregate_potential(df):
