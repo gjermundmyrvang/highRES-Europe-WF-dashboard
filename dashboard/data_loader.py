@@ -9,6 +9,7 @@ VARIABLES = [
     "var_tot_pcap_z",
     "var_new_pcap",
     "var_new_pcap_z",
+    "var_new_vre_pcap_r",
     "var_tot_trans_pcap",
     "costs",
     "area",

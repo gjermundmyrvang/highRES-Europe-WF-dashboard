@@ -131,7 +131,7 @@ def _render_utilization(df):
 
     # Data preparation
     potential_z = df["area"].replace([np.inf, -np.inf], np.nan)
-    new_vre_z = df["var_new_pcap_z"]
+    new_vre_z = df["var_new_vre_pcap_r"]
 
     util_df = calculate_utilization(new_vre_z, potential_z, use_area=use_area)
 
