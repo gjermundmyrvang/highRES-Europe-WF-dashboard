@@ -50,6 +50,16 @@ def render_system_metrics(data, sets):
         rate, is_offline = get_exchange_rate(selected_currency["iso_code"])
         adjusted = format_money(adjust_currency(adjusted_gbp, rate))
 
+        # Handle if user does not have internet connection
+        if is_offline:
+            st.warning("No internet connection, live exchange rates unavailable.")
+            rate = st.number_input(
+                "Enter exchange rate manually (GBP → selected currency)",
+                min_value=0.01,
+                value=1.0,
+                step=0.01,
+            )
+
         with st.container(border=True):
             delta_str = (
                 f"Manual rate at {rate:.4f}"

@@ -1,25 +1,37 @@
 import requests
 import streamlit as st
 
+
 @st.cache_data
 def get_currencies():
-    response = requests.get("https://api.frankfurter.dev/v2/currencies")
-    return response.json()
+    try:
+        response = requests.get("https://api.frankfurter.dev/v2/currencies", timeout=5)
+        return response.json()
+    except Exception:
+        return [{"iso_code": "EUR", "name": "Euro", "symbol": "€"}]
+
 
 @st.cache_data
 def get_exchange_rate(target_currency):
-    response = requests.get(
-        "https://api.frankfurter.dev/v2/rates",
-        params={"base": "GBP", "quotes": target_currency}
-    )
-    return response.json()[0]["rate"]
+    try:
+        response = requests.get(
+            "https://api.frankfurter.dev/v2/rates",
+            params={"base": "GBP", "quotes": target_currency},
+            timeout=5,
+        )
+        return response.json()[0]["rate"], False
+    except Exception:
+        return 1.0, True  # rate, user is offline
+
 
 def adjust_inflation(gbp_value, factor):
     return gbp_value * factor
 
+
 def adjust_currency(gbp_value, rate):
     adjusted = gbp_value * rate
     return adjusted
+
 
 def format_money(value):
     abs_val = abs(value)
