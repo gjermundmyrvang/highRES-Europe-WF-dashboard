@@ -24,6 +24,21 @@ div[role="radiogroup"] label > div:first-child {
     unsafe_allow_html=True,
 )
 
+st.markdown(
+    """
+<style>
+[data-testid="stBottom"] > div {
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    margin-top: 4rem;
+}
+</style>
+""",
+    unsafe_allow_html=True,
+)
+
 st.set_page_config(layout="wide")
 st.title("highRES Dashboard")
 st.page_link(
@@ -47,7 +62,18 @@ def main():
     # Merge with any user-added custom scenarios
     all_scenarios = {**standard, **st.session_state.added_scenarios}
 
-    scenario_gdx = render_sidebar(all_scenarios)
+    # Sidebar with scenario settings
+    render_sidebar()
+
+    # Sticky bottom with buttons for switching scenarios
+    with st.bottom:
+        selected = st.segmented_control(
+            "**Active scenario**",
+            options=list(all_scenarios.keys()),
+            default=list(all_scenarios.keys())[0],
+        )
+
+    scenario_gdx = all_scenarios[selected]
 
     data = load_scenario(scenario_gdx)
     sets = load_sets(scenario_gdx)

@@ -3,16 +3,10 @@ from pathlib import Path
 from data_loader import load_custom_scenarios
 
 
-def render_sidebar(all_scenarios: dict):
+def render_sidebar():
     with st.sidebar:
         st.header(":material/folder_managed: Scenario Settings")
-
-        selected_scenario = st.selectbox(
-            "Scenario",
-            options=list(all_scenarios.keys()),
-        )
-
-        st.subheader(":material/create_new_folder: Add other scenarios")
+        st.subheader(":material/create_new_folder: Add more scenarios")
         folder_path = st.text_input("Folder path")
         if st.button("Scan folder"):
             path = Path(folder_path)
@@ -31,5 +25,3 @@ def render_sidebar(all_scenarios: dict):
         if "scan_success" in st.session_state:
             st.success(st.session_state.scan_success)
             del st.session_state.scan_success
-
-        return all_scenarios[selected_scenario]
