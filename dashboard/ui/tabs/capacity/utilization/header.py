@@ -5,7 +5,7 @@ def render_utilization_header():
     st.caption("How much of the available renewable potential did the model build?")
     with st.expander("How utilization is calculated", expanded=True):
         st.markdown("""
-        **Installed capacity** comes from `var_new_pcap_z` --> only newly built VRE technologies (Solar, Wind Onshore, Wind Offshore).
+        **Installed capacity** comes from `var_new_vre_pcap_r` --> only newly built VRE technologies (Solar, Wind Onshore, Wind Offshore).
         
         **Available potential** comes from the `area` dataset, which reports the maximum installable capacity per country and technology based on land availability and resource quality.
         

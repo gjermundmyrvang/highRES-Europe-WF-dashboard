@@ -34,7 +34,7 @@ def render_vre_summary(
                 icon = TECH_ICONS[tech]
                 installed = tech_df.iloc[i]["installed"]
                 potential = tech_df.iloc[i]["potential"]
-                util = (installed / potential * 100).round(1)
+                util = (installed / potential * 100).round(1) if potential > 0 else 0.0
                 util = float(util) if not np.isnan(util) else 0.0
                 with vre_cols[i]:
                     st.metric(f"{icon} {tech}", value=f"{installed:,.0f} {unit_label}")

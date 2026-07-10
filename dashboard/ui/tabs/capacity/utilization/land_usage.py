@@ -1,6 +1,5 @@
 import streamlit as st
 import plotly.express as px
-from data.country_names import get_country_name
 from data.constants import TECH_ICONS, area_reference
 from ui.components import filter_countries
 
@@ -95,18 +94,20 @@ def _render_country_detail(land_df, util_df, util_region_df):
         help="Total land area of this country",
     )
     col2.metric(
-        ":material/landscape: VRE-suitable land",
+        ":material/landscape: VRE-suitable area",
         f"{country_row['potential_area']:,.0f} km²",
-        help="Land identified as technically suitable for VRE",
+        help="Area identified as technically suitable for VRE",
     )
     col3.metric(
-        ":material/solar_power: Land used for VRE",
+        ":material/solar_power: Area used for VRE",
         f"{country_row['installed_area']:,.0f} km²",
-        delta=f"{country_row['land_use_pct']}% of country land",
-        help="Land actually occupied by newly installed VRE",
+        delta=f"{country_row['land_use_pct']}% of total land area",
+        help="Area actually occupied by newly installed VRE",
     )
 
-    st.caption(f"Land occupied by newly installed renewables in {selected_country}:")
+    st.caption(
+        f"Area (onshore & offshore) occupied by newly installed renewables in {selected_country}:"
+    )
 
     for col, (_, row) in zip(
         st.columns(len(country_tech_df), border=True), country_tech_df.iterrows()
@@ -122,15 +123,13 @@ def _render_country_detail(land_df, util_df, util_region_df):
         st.info(f"Not shown (no installed capacity): {', '.join(sorted(excluded))}")
 
     # Regional Data
-    st.caption("Land occupied by newly installed renewables in regions:")
+    st.caption("Area (onshore & offshore) occupied by newly installed renewables in")
     region_df = util_region_df[
         util_region_df["country_name"] == selected_country
     ].copy()
 
     region_totals = region_df.groupby("r")["installed"].sum()
     inactive_regions = region_totals[region_totals == 0].index.tolist()
-    if inactive_regions:
-        st.info("Not shown (no installed capacity): " + ", ".join(inactive_regions))
     active_df = region_df[region_df["r"].isin(region_totals[region_totals > 0].index)]
     table = active_df.pivot_table(
         index="r",
@@ -145,3 +144,7 @@ def _render_country_detail(land_df, util_df, util_region_df):
     table = table.sort_values("Total", ascending=False)
 
     st.dataframe(table.style.format("{:.1f}"))
+
+    # Display regions with nothing installed in infobox
+    if inactive_regions:
+        st.info("Not shown (no installed capacity): " + ", ".join(inactive_regions))
