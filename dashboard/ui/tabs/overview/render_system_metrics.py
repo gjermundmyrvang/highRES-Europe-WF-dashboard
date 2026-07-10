@@ -8,6 +8,8 @@ from data.cost_transformer import (
 )
 from data_loader import scalar, table
 from ..shared import render_key_data
+from data.country_names import get_country_name
+from data.constants import COST_COMPONENTS
 
 
 def render_system_metrics(data, sets):
@@ -33,26 +35,47 @@ def render_system_metrics(data, sets):
 
     st.divider()
 
-    # HERO: Total Cost
-    st.subheader("Cost")
-    inflation_factor, selected_currency = _render_cost_settings()
+    total_col, breakdown_col = st.columns([0.3, 0.7], gap="large")
+    with total_col:
+        # Total Cost
+        st.subheader("Costs")
+        inflation_factor, selected_currency = _render_cost_settings()
 
-    total_cost = data["costs"].iloc[0]["value"]
-    gbp_value = total_cost * 1_000_000
-    adjusted_gbp = adjust_inflation(gbp_value, inflation_factor)
-    rate = get_exchange_rate(selected_currency["iso_code"])
-    adjusted = format_money(adjust_currency(adjusted_gbp, rate))
+        total_cost = data["costs"].iloc[0]["value"]
+        gbp_value = total_cost * 1_000_000
+        adjusted_gbp = adjust_inflation(gbp_value, inflation_factor)
+        rate, is_offline = get_exchange_rate(selected_currency["iso_code"])
+        adjusted = format_money(adjust_currency(adjusted_gbp, rate))
 
-    with st.container(border=True):
-        st.metric(
-            ":material/payments: &nbsp; **Total System Cost**",
-            f"{selected_currency['symbol']}{adjusted}",
-            delta=f"×{inflation_factor} inflation · {selected_currency['iso_code']} at {rate:.4f}",
+        with st.container(border=True):
+            delta_str = (
+                f"Manual rate at {rate:.4f}"
+                if is_offline
+                else f"{selected_currency['iso_code']} at {rate:.4f}"
+            )
+            st.metric(
+                ":material/payments: &nbsp; **Total System Cost**",
+                f"{selected_currency['symbol']}{adjusted}",
+                delta=f"×{inflation_factor} inflation | {delta_str}",
+            )
+            st.caption(f"Raw model output: £{format_money(gbp_value)} (2010 GBP)")
+
+    with breakdown_col:
+        # Cost breakdown
+        category = st.segmented_control(
+            "Cost breakdown",
+            options=["Generation", "Storage", "Transmission"],
+            default=None,
         )
-        st.caption(f"Raw model output: £{format_money(gbp_value)} (2010 GBP)")
 
     # List of included countries
     _render_countries(sets)
+        if category:
+            _render_cost_breakdown(
+                data, category, inflation_factor, rate, selected_currency, gbp_value
+            )
+        else:
+            st.caption("Select a category above to see the breakdown.")
 
 
 def _render_cost_settings():
@@ -85,3 +108,46 @@ def _render_countries(sets):
         f":material/public: &nbsp; {len(df)} countries included in this scenario"
     ):
         st.dataframe(df, hide_index=True)
+
+def _render_cost_breakdown(
+    data, category, inflation_factor, rate, selected_currency, gbp_value
+):
+    components = COST_COMPONENTS[category]
+    symbol = selected_currency["symbol"]
+
+    # Sum all component values and convert from millions to full value
+    category_total_gbp = (
+        sum(
+            data[var]["value"].sum()
+            for var in components
+            if var in data and not data[var].empty
+        )
+        * 1_000_000
+    )
+
+    # Adjust for inflation and convert to selected currency
+    category_total_adjusted_gbp = adjust_inflation(category_total_gbp, inflation_factor)
+    category_total_converted = adjust_currency(category_total_adjusted_gbp, rate)
+    category_total_formatted = format_money(category_total_converted)
+    category_pct = (category_total_gbp / gbp_value * 100).round(1)
+
+    st.metric(
+        f":material/payments: **{category} Total**",
+        f"{symbol}{category_total_formatted}",
+        delta=f"{category_pct}% of total system cost",
+    )
+
+    cols = st.columns(len(components), border=True, gap="large")
+    for col, var in zip(cols, components):
+        if var not in data or data[var].empty:
+            col.metric(var, "N/A", help="Not available in this scenario")
+            continue
+        # Get raw value in GBP millions and convert to full value
+        raw_gbp = data[var]["value"].sum() * 1_000_000
+
+        # Adjust for inflation and convert to selected currency
+        adjusted_gbp = adjust_inflation(raw_gbp, inflation_factor)
+        converted = adjust_currency(adjusted_gbp, rate)
+        formatted = format_money(converted)
+
+        col.metric(var, f"{symbol}{formatted}")
