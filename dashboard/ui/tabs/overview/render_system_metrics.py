@@ -27,6 +27,9 @@ def render_system_metrics(data, sets):
     st.markdown(f":material/schedule: &nbsp; **{resolution:.1f} year** resolution")
     st.markdown(f":material/timer: &nbsp; Hours **{hfirst}–{hlast - 1}**")
 
+    # List of included countries
+    _render_countries(sets)
+
     st.divider()
 
     # Capacity Overview
@@ -68,8 +71,6 @@ def render_system_metrics(data, sets):
             default=None,
         )
 
-    # List of included countries
-    _render_countries(sets)
         if category:
             _render_cost_breakdown(
                 data, category, inflation_factor, rate, selected_currency, gbp_value
@@ -103,11 +104,13 @@ def _render_cost_settings():
 def _render_countries(sets):
     countries = table(sets, "z")
     df = countries[["*"]].rename(columns={"*": "Country"})
+    df_names = df.map(get_country_name)
 
     with st.expander(
         f":material/public: &nbsp; {len(df)} countries included in this scenario"
     ):
-        st.dataframe(df, hide_index=True)
+        st.dataframe(df_names, hide_index=True)
+
 
 def _render_cost_breakdown(
     data, category, inflation_factor, rate, selected_currency, gbp_value
