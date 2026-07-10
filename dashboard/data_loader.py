@@ -12,6 +12,17 @@ VARIABLES = [
     "var_new_vre_pcap_r",
     "var_tot_trans_pcap",
     "costs",
+    "costs_gen_capex",
+    "costs_gen_fom",
+    "costs_gen_varom",
+    "costs_gen_start",
+    "costs_gen_vreconnection",
+    "costs_store_capex",
+    "costs_store_fom",
+    "costs_store_varom",
+    "costs_store_start",
+    "costs_trans_capex",
+    "costs_trans_fom",
     "area",
 ]
 
