@@ -85,3 +85,25 @@ def area_reference(km2: float) -> str:
         return f"≈ {round(1/ratio)}× smaller than {closest}"
     else:
         return f"≈ the size of {closest}"
+
+
+# TODO: Provide correct key value labels
+COST_COMPONENTS = {
+    "Generation": {
+        "costs_gen_capex": "costs_gen_capex",
+        "costs_gen_fom": "costs_gen_fom",
+        "costs_gen_varom": "costs_gen_varom",
+        "costs_gen_start": "costs_gen_start",
+        "costs_gen_vreconnection": "costs_gen_vreconnection",
+    },
+    "Storage": {
+        "costs_store_capex": "costs_store_capex",
+        "costs_store_fom": "costs_store_fom",
+        "costs_store_varom": "costs_store_varom",
+        "costs_store_start": "costs_store_start",
+    },
+    "Transmission": {
+        "costs_trans_capex": "costs_trans_capex",
+        "costs_trans_fom": "costs_trans_fom",
+    },
+}
