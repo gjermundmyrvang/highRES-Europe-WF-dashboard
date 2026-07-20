@@ -7,7 +7,15 @@ from data_loader import (
 )
 from data.loader import load_scenario
 from ui import render_sidebar
-from ui.tabs import render_overview, render_capacity, render_scenarios
+from ui.tabs import (
+    render_overview,
+    render_capacity,
+    render_scenarios,
+    render_utilization,
+    render_map,
+)
+from data.transformer import load_country_areas
+import json
 
 # ---------- PAGE SETUP ------------
 st.markdown(
@@ -83,14 +91,22 @@ def main():
 
     data = load_scenario(scenario_gdx)
     sets = load_sets(scenario_gdx)
+    # Create dict of country areas in km2
+    country_areas = load_country_areas(config["geojson_path"])
 
-    tab1, tab2, tab3 = st.tabs(["Overview", "Explore Capacity", "Scenarios"])
+    # Geo
+    with open(config["geojson_path"]) as f:
+        geo = json.load(f)
+
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(
+        ["Overview", "Map", "Explore Capacity", "VRE Deployment", "Scenarios"]
+    )
 
     with tab1:
         render_overview(data, sets, scenario_gdx)
 
     with tab2:
-        render_capacity(data, sets)
+        render_map(data, geo)
 
     with tab3:
         render_scenarios(all_scenarios)

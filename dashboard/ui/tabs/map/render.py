@@ -1,0 +1,173 @@
+import streamlit as st
+import plotly.express as px
+from data.constants import TECH_COLORS, TECH_ICONS, get_capacity_to_area
+from data.utilization import calculate_utilization_region
+
+
+def render_map(data, geo):
+    st.title("Map Exploration")
+    st.markdown(
+        "> Displaying overview of installed capacity by technology in countries. **Click** any country to view more in depth information about that country."
+    )
+    df = data["var_tot_pcap_z"]
+
+    geo_indices = {f["properties"]["index"] for f in geo["features"]}
+    z_values = set(df["z"].unique())
+    matches = z_values & geo_indices
+
+    if "map_selected_country" not in st.session_state:
+        st.session_state.map_selected_country = None
+
+    selected = st.session_state.map_selected_country
+    if selected:
+        selected_country_name = df[df["z"] == selected].iloc[0]["country_name"]
+
+    if not matches:
+        st.warning(
+            "The zone codes in this scenario don't match the shapefile. "
+            "A different shapefile may be needed --> check **`geojson_path`** in **`dashboard_config.yaml`**."
+        )
+        return
+
+    if len(matches) < len(z_values):
+        st.info(
+            f"{len(z_values) - len(matches)} zone(s) couldn't be matched to the shapefile and won't appear on the map."
+        )
+
+    col_controls, col_map = st.columns([0.25, 0.75], gap="large")
+
+    with col_controls:
+        st.subheader(":material/tune: Controls")
+        map_df, selected_tech, var = _render_controls(data, selected)
+
+    with col_map:
+        header_str = f"{selected_country_name}" if selected else "Map"
+        st.subheader(f":material/map: {header_str}")
+        with st.container(border=True, height=800):
+            if selected:
+                if st.button(":material/arrow_back: Back to map"):
+                    st.session_state.map_selected_country = None
+                    st.rerun()
+                _render_country_details(data, selected, var)
+            else:
+                clicked = _render_map_viz(map_df, geo, selected_tech)
+                if clicked:
+                    st.session_state.map_selected_country = clicked
+                    st.rerun()
+
+
+def _render_controls(data, selected):
+    all_techs = sorted(data["var_tot_pcap_z"]["g"].unique())
+
+    disable_dropdown = selected != None
+
+    with st.container(border=True):
+        cap_type = st.radio(
+            "Capacity type",
+            options=["Total", "New"],
+            horizontal=True,
+            key="map_cap_type_radio",
+        )
+
+    with st.container(border=True):
+        selected_tech = st.selectbox(
+            "Technology", options=all_techs, disabled=disable_dropdown
+        )
+
+    var = "var_tot_pcap_z" if cap_type == "Total" else "var_new_pcap_z"
+    df = data[var].copy()
+
+    df = df[df["g"] == selected_tech]
+
+    agg = df.groupby(["z", "country_name"])["value"].sum().reset_index()
+
+    # Ensure all zones appear even if they have zero value
+    all_zones = data["var_tot_pcap_z"][["z", "country_name"]].drop_duplicates()
+    agg = all_zones.merge(agg, on=["z", "country_name"], how="left").fillna(0)
+
+    return agg, selected_tech, var
+
+
+def _render_map_viz(df, geo, selected_tech):
+    tech_color = TECH_COLORS.get(selected_tech, "#1B5FA8")
+    fig = px.choropleth(
+        df,
+        geojson=geo,
+        locations="z",
+        featureidkey="properties.index",
+        color="value",
+        color_continuous_scale=[
+            [0, "#f0f0f0"],
+            [0.001, "#e8f0fe"],
+            [1, tech_color],
+        ],
+        hover_name="country_name",
+        labels={"value": "GW"},
+    )
+    fig.update_geos(fitbounds="locations", visible=False)
+    fig.update_layout(height=800, coloraxis_showscale=True)
+    event = st.plotly_chart(fig, on_select="rerun")
+    selected_country = _get_clicked_country(event)
+    return selected_country
+
+
+def _get_clicked_country(event) -> str | None:
+    points = event["selection"].get("points", [])
+    if points:
+        first_point = points[0]
+        return first_point["properties"].get("index", None)
+
+    return None
+
+
+def _render_country_details(data, country, var):
+    df = data[var]
+    country_df = df[df["z"] == country].reset_index()
+    cap_type = "total" if ("tot" in var) else "new"
+
+    # Installed techs
+    st.subheader(f"Installed {cap_type} capacity")
+    cols_per_row = 4
+    cols = st.columns(cols_per_row, gap="large")
+    for i, (_, row) in enumerate(country_df.iterrows()):
+        t = row["g"]
+        icon = TECH_ICONS.get(t, ":material/category:")
+        cols[i % cols_per_row].metric(
+            f"{icon} {t}", f"{row['value']:.1f} GW", border=True
+        )
+
+    st.divider()
+
+    # Utilization (installed new vre vs potential)
+    new_vre_df = data["var_new_vre_pcap_r"]
+    potential_df = data["area"]
+    vre_techs = set(new_vre_df["g"].unique())
+    vre_list_str = ", ".join(vre_techs)
+    st.subheader(
+        "How much of potential renewable technology did the model build in this country?"
+    )
+    st.info(
+        f"Only {vre_list_str} are shown --> these are the technologies where the model defines an available potential to compare against."
+    )
+    cap2area = get_capacity_to_area(data)
+    util_df = calculate_utilization_region(new_vre_df, potential_df, cap2area)
+    country_util_df = util_df[util_df["z"] == country]
+    pivot = country_util_df.pivot_table(
+        index="r",
+        columns="g",
+        values="utilization_pct",
+        fill_value=0,
+    )
+    fig = px.imshow(
+        pivot,
+        color_continuous_scale="Blues",
+        aspect="auto",
+        labels={"color": "Utilization (%)"},
+        text_auto=".0f",
+    )
+    fig.update_layout(
+        xaxis_title="Technology",
+        yaxis_title="Region",
+        coloraxis_colorbar=dict(title="%"),
+    )
+    st.plotly_chart(fig, use_container_width=True)
