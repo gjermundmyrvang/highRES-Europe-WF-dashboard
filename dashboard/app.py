@@ -49,7 +49,7 @@ st.markdown(
 )
 
 st.set_page_config(layout="wide")
-st.title("highRES Dashboard")
+st.header("highRES Dashboard")
 st.page_link(
     "pages/1_README.py",
     label=":material/library_books: &nbsp; How to use this dashboard",
@@ -81,16 +81,27 @@ def main():
 
     # Sticky bottom with buttons for switching scenarios
     with st.bottom:
-        selected = st.segmented_control(
-            "**Active scenario**",
-            options=list(all_scenarios.keys()),
-            default=list(all_scenarios.keys())[0],
-        )
+        radio, display = st.columns([0.1, 0.9])
+        with radio:
+            layout = st.radio("Layout", ["Dropdown", "All"], horizontal=True)
+        with display:
+            if layout == "Dropdown":
+                selected = st.selectbox(
+                    "**Active scenario**",
+                    options=list(all_scenarios.keys()),
+                )
+            else:
+                selected = st.segmented_control(
+                    "**Active scenario**",
+                    options=list(all_scenarios.keys()),
+                    default=list(all_scenarios.keys())[0],
+                )
 
     scenario_gdx = all_scenarios[selected]
 
-    data = load_scenario(scenario_gdx)
-    sets = load_sets(scenario_gdx)
+    data = load_scenario(scenario_gdx, config["gams_path"])
+    sets = load_sets(scenario_gdx, config["gams_path"])
+
     # Create dict of country areas in km2
     country_areas = load_country_areas(config["geojson_path"])
 
@@ -111,7 +122,11 @@ def main():
         render_map(data, geo)
 
     with tab3:
-        render_scenarios(all_scenarios)
+        render_capacity(data, sets)
+
+    with tab4:
+        render_utilization(data, country_areas)
+
     with tab5:
         render_scenarios(
             all_scenarios, config, inflation_factor, selected_currency, rate
