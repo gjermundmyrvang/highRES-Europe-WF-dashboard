@@ -3,6 +3,7 @@ from data_loader import (
     load_sets,
     load_config,
     load_standard_scenarios,
+    load_custom_scenarios,
 )
 from data.loader import load_scenario
 from ui import render_sidebar
@@ -55,12 +56,17 @@ def main():
         st.session_state.added_scenarios = {}
 
     config = load_config()
+    is_custom = config["results_path"] != "work"
 
     # Load standard scenarios from config path
-    standard = load_standard_scenarios(config["results_path"])
+    loaded = (
+        load_custom_scenarios(config["results_path"])
+        if is_custom
+        else load_standard_scenarios(config["results_path"])
+    )
 
     # Merge with any user-added custom scenarios
-    all_scenarios = {**standard, **st.session_state.added_scenarios}
+    all_scenarios = {**loaded, **st.session_state.added_scenarios}
 
     # Sidebar with scenario settings
     render_sidebar()
