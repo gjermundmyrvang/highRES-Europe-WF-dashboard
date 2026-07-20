@@ -1,6 +1,5 @@
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from data.country_names import get_country_name
 from data.constants import TECH_COLORS
 
 DEFAULT_COLOR = "#cccccc"

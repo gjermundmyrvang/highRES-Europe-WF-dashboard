@@ -50,3 +50,18 @@ def render_tech_bar_chart(df, unit_label, x_vals=["util_pct", "unused_pct"]):
     fig.update_layout(showlegend=False)
     fig.update_traces(texttemplate="%{x:.1f}%")
     st.plotly_chart(fig)
+
+
+def render_tot_bar_chart(df):
+    fig = px.bar(
+        df,
+        x=df["g"],
+        y=df["value"],
+        orientation="v",
+        labels={
+            "value": "GW",
+            "g": "Technology",
+        },
+        height=600,
+    )
+    st.plotly_chart(fig)
