@@ -40,36 +40,6 @@ TECH_COLORS = {
 
 VRE_TECHS = {"Solar", "Windonshore", "Windoffshore", "WindoffshoreFloat", "HydroRoR"}
 
-# TODO: Find out where to find this information from the official repo files
-COUNTRY_AREA_KM2 = {
-    "AT": 83871,
-    "BE": 30528,
-    "BG": 110879,
-    "CH": 41285,
-    "CZ": 78866,
-    "DE": 357114,
-    "DK": 42924,
-    "EE": 45228,
-    "ES": 505990,
-    "FI": 338145,
-    "FR": 551695,
-    "GR": 131957,
-    "HR": 56594,
-    "HU": 93028,
-    "IE": 70273,
-    "IT": 301340,
-    "LT": 65300,
-    "LU": 2586,
-    "LV": 64589,
-    "NL": 41543,
-    "NO": 385207,
-    "PL": 312696,
-    "PT": 92212,
-    "RO": 238397,
-    "SE": 450295,
-    "SI": 20273,
-    "SK": 49035,
-    "UK": 243610,
 }
 
 # TODO: Find better references?
