@@ -2,7 +2,7 @@ import gdxpds
 import pandas as pd
 from pathlib import Path
 import yaml
-from data.country_names import get_country_name
+from data.constants import get_country_name
 
 VARIABLES = [
     "var_tot_pcap",
@@ -54,13 +54,15 @@ def load_custom_scenarios(folder_path: str | Path) -> dict[str, Path]:
     return {gdx.stem: gdx for gdx in sorted(folder_path.glob("*.gdx"))}
 
 
-def load_results(gdx_path: str | Path) -> dict[str, pd.DataFrame]:
+def load_results(
+    gdx_path: str | Path, gams_path: str | Path
+) -> dict[str, pd.DataFrame]:
     gdx_path = Path(gdx_path)
     if not gdx_path.exists():
         raise FileNotFoundError(f"No GDX file found at {gdx_path}")
 
     results = {}
-    with gdxpds.gdx.GdxFile(lazy_load=True) as gdx:
+    with gdxpds.gdx.GdxFile(lazy_load=True, gams_dir=str(gams_path)) as gdx:
         gdx.read(str(gdx_path))
         for var in VARIABLES:
             if var in gdx:
@@ -91,11 +93,11 @@ def clean_results(results: dict[str, pd.DataFrame]) -> dict[str, pd.DataFrame]:
     return cleaned
 
 
-def load_sets(gdx_path: str | Path) -> dict:
+def load_sets(gdx_path: str | Path, gams_path: str | Path) -> dict:
     gdx_path = Path(gdx_path)
     sets = {}
 
-    with gdxpds.gdx.GdxFile(lazy_load=True) as gdx:
+    with gdxpds.gdx.GdxFile(lazy_load=True, gams_dir=str(gams_path)) as gdx:
         gdx.read(str(gdx_path))
 
         for s in SETS:

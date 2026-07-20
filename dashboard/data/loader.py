@@ -4,10 +4,10 @@ from pathlib import Path
 
 
 @st.cache_data
-def load_scenario(path):
-    return clean_results(load_results(Path(path)))
+def load_scenario(path, gams_path):
+    return clean_results(load_results(Path(path), Path(gams_path)))
 
 
 @st.cache_data
-def load_sets_cached(path):
-    return load_sets(Path(path))
+def load_sets_cached(path, gams_path):
+    return load_sets(Path(path), Path(gams_path))
