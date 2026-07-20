@@ -9,6 +9,7 @@ dependencies:
   - requests
   - shapely
   - pyyaml
+  - geopandas
   - pip:
       - streamlit
       - plotly
