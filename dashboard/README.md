@@ -24,13 +24,14 @@ mamba env create -f dashboard/environment.yml
 mamba activate highres-dashboard
 ```
 
-**4. Configure the dashboard** (optional):
+**4. Configure the dashboard**:
 
-Edit `dashboard/dashboard_config.yaml` to point to your results folder and GeoJSON path:
+Edit `dashboard/dashboard_config.yaml` to point to your results folder, GeoJSON path and GAMS path:
 
 ```yaml
-results_path: work # folder containing scenario subfolders with results.gdx
+results_path: work # defualt folder containing scenario subfolders with results.gdx
 geojson_path: intermediate_data/region/shapes/europe_onshore.geojson
+gams_path: "path/to/gams"
 ```
 
 **5. Run the dashboard** from the project root:
