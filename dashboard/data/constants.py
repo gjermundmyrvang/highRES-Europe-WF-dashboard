@@ -11,6 +11,11 @@ TECH_ICONS = {
     "NuclearEPR": ":material/radio_button_checked:",
     "SynCon": ":material/settings_input_component:",
     "WindoffshoreFloat": ":material/air:",
+    "Windonshore_OF": ":material/air:",
+    "Windonshore_F": ":material/air:",
+    "Import": ":material/download:",
+    "Windoffshorefloating": ":material/air:",
+    "Export": ":material/upload:",
 }
 
 TECH_COLORS = {
