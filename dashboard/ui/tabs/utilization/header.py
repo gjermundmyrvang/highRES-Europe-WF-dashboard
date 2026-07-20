@@ -5,13 +5,13 @@ def render_utilization_header():
     st.caption("How much of the available renewable potential did the model build?")
     with st.expander("How utilization is calculated", expanded=True):
         st.markdown("""
-        **Installed capacity** comes from `var_new_vre_pcap_r` --> only newly built VRE technologies.
+        **Installed capacity** comes from `var_new_vre_pcap_r` --> only newly built VRE technologies (Solar, Wind Onshore, Wind Offshore).
         
         **Available potential** comes from the `area` dataset, which reports the maximum installable capacity per country and technology based on land availability and resource quality.
         
         - `HydroRoR` is excluded as its potential is stored as `+INF`
         - **Power (GW)**: direct comparison of installed vs potential capacity
-        - **Area (km²)**: capacity values converted using technology-specific factors e.g:
+        - **Area (km²)**: capacity values converted using technology-specific factors:
             - Solar: 0.04 GW/km²
             - Wind Onshore: 0.0024 GW/km²
             - Wind Offshore: 0.005 GW/km²

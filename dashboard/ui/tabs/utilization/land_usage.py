@@ -14,49 +14,69 @@ def render_land_usage(
     country_total_area = land_df["country_area_km2"].sum().round(1)
 
     st.subheader("Land Area Context")
-    col1, col2 = st.columns(2, border=True, gap="large")
+    col1, col2 = st.columns([0.3, 0.7], border=True, gap="large")
     col1.metric(
         ":material/public: Total country land",
         f"{country_total_area:,.0f} km²",
         help="Sum of all country areas in the model",
     )
-    col2.metric(
-        ":material/solar_power: Land used for VRE",
-        f"{total_installed:,.0f} km²",
-        help="Land actually occupied by newly installed VRE capacity",
-    )
+    with col2:
+        tech_total = util_df.groupby("g")["installed"].sum().reset_index()
+        num_tech_cols = len(set(util_df["g"].unique()))
+        for col, (_, row) in zip(
+            st.columns(num_tech_cols, gap="large"), tech_total.iterrows()
+        ):
+            t = row["g"]
+            icon = TECH_ICONS.get(t, ":material/category:")
+            col.metric(
+                f"{icon} {t}",
+                f"{row['installed']:,.0f} km²",
+            )
 
     col_chart, col_detail = st.columns([0.6, 0.4], gap="large")
 
     with col_chart:
+        view = st.radio(
+            "View as",
+            options=["Absolute (km²)", "Percentage (%)"],
+            horizontal=True,
+        )
+
         land_usage_filtered = filter_countries(
             land_df.sort_values("installed_area", ascending=True),
             default=[],
             key="filter_land_usage",
         )
+        if view == "Percentage (%)":
+            x_cols = ["land_use_pct", "remaining_pct"]
+            land_usage_filtered = land_usage_filtered.copy()
+            land_usage_filtered["remaining_pct"] = (
+                100 - land_usage_filtered["land_use_pct"]
+            )
+            x_label = "%"
+        else:
+            x_cols = ["installed_area", "remaining_country"]
+            x_label = "Area (km²)"
+
         fig = px.bar(
             land_usage_filtered,
-            x=["installed_area", "remaining_country"],
+            x=x_cols,
             y="country_name",
             orientation="h",
             color_discrete_map={
-                "installed_area": "#2ECC71",
-                "remaining_country": "#E8E8E8",
+                x_cols[0]: "#2ECC71",
+                x_cols[1]: "#E8E8E8",
             },
-            labels={"value": "Area (km²)", "country_name": "Country", "variable": ""},
+            labels={"value": x_label, "country_name": "Country", "variable": ""},
             height=700,
         )
         fig.update_layout(legend=dict(orientation="h", y=-0.1), barmode="stack")
-        fig.update_traces(selector={"name": "installed_area"}, name="VRE installed")
-        fig.update_traces(
-            selector={"name": "remaining_country"}, name="Rest of country"
-        )
+        fig.update_traces(selector={"name": x_cols[0]}, name="VRE installed")
+        fig.update_traces(selector={"name": x_cols[1]}, name="Rest of country")
         st.plotly_chart(fig)
 
     with col_detail:
         _render_country_detail(land_df, util_df, util_region_df)
-
-    st.divider()
 
 
 def _render_country_detail(land_df, util_df, util_region_df):
@@ -80,19 +100,10 @@ def _render_country_detail(land_df, util_df, util_region_df):
 
     country_row = land_df[land_df["country_name"] == selected_country].iloc[0]
 
-    st.subheader(selected_country)
-
-    col1, col2 = st.columns(2, border=True, gap="large")
-    col1.metric(
+    st.metric(
         ":material/public: Total country land",
         f"{country_row['country_area_km2']:,.0f} km²",
         help="Total land of this country",
-    )
-    col2.metric(
-        ":material/solar_power: Land used for VRE",
-        f"{country_row['installed_area']:,.0f} km²",
-        delta=f"{country_row['land_use_pct']}% of total land area",
-        help="Land actually occupied by newly installed VRE",
     )
 
     st.caption(f"Land occupied by newly installed renewables in {selected_country}:")
