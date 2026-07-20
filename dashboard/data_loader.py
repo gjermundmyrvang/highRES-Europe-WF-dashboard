@@ -25,6 +25,7 @@ VARIABLES = [
     "costs_trans_fom",
     "area",
     "gen_cap2area",
+    "demand",
 ]
 
 SETS = ["hfirst", "hlast", "day", "month", "year", "vre", "z"]
