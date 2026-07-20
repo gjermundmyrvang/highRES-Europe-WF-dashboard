@@ -1,19 +1,8 @@
 import numpy as np
-from data.constants import COUNTRY_AREA_KM2
-from data.country_names import get_country_name
-
-# TODO: This is different between techs?
-AREA_FACTOR = 2.4  # 1 km² produces 2.4 GW?
-
-CAPACITY_TO_AREA = {
-    "Solar": 0.04,
-    "Windoffshore": 0.005,
-    "Windonshore": 0.0024,
-    "HydroRoR": 0.001,
-}
+from data.constants import get_country_name
 
 
-def calculate_utilization(new_vre_z, potential_z, use_area=False):
+def calculate_utilization(new_vre_z, potential_z, cap2area, use_area=False):
     potential_z = potential_z[potential_z["g"] != "HydroRoR"]  # Exclude (INF+)
     installed_vre = new_vre_z[new_vre_z["g"] != "HydroRoR"]  # Exclude here also
 
@@ -33,8 +22,8 @@ def calculate_utilization(new_vre_z, potential_z, use_area=False):
     df["installed"] = df["installed"].fillna(0)
 
     if use_area:
-        df["installed"] = df["installed"] / df["g"].map(CAPACITY_TO_AREA)
-        df["potential"] = df["potential"] / df["g"].map(CAPACITY_TO_AREA)
+        df["installed"] = df["installed"] / df["g"].map(cap2area)
+        df["potential"] = df["potential"] / df["g"].map(cap2area)
 
     # If potential > 0, calculate utilization as installed/potential * 100. Otherwise set it to NaN
     df["utilization_pct"] = np.where(
@@ -46,7 +35,7 @@ def calculate_utilization(new_vre_z, potential_z, use_area=False):
     return df
 
 
-def calculate_utilization_region(new_vre_z, potential_z, use_area=False):
+def calculate_utilization_region(new_vre_z, potential_z, cap2area, use_area=False):
     potential_z = potential_z[potential_z["g"] != "HydroRoR"]  # Exclude (INF+)
     installed_vre = new_vre_z[new_vre_z["g"] != "HydroRoR"]  # Exclude here also
 
@@ -66,8 +55,8 @@ def calculate_utilization_region(new_vre_z, potential_z, use_area=False):
     df["installed"] = df["installed"].fillna(0)
 
     if use_area:
-        df["installed"] = df["installed"] / df["g"].map(CAPACITY_TO_AREA)
-        df["potential"] = df["potential"] / df["g"].map(CAPACITY_TO_AREA)
+        df["installed"] = df["installed"] / df["g"].map(cap2area)
+        df["potential"] = df["potential"] / df["g"].map(cap2area)
 
     # If potential > 0, calculate utilization as installed/potential * 100. Otherwise set it to NaN
     df["utilization_pct"] = np.where(
@@ -79,23 +68,19 @@ def calculate_utilization_region(new_vre_z, potential_z, use_area=False):
     return df
 
 
-def calculate_country_land_use(new_vre_z, potential_z):
+def calculate_country_land_use(new_vre_z, potential_z, country_areas, cap2area):
     # Calculates installed VRE area as % of total country land area
-    util_df = calculate_utilization(new_vre_z, potential_z, use_area=False)
+    util_df = calculate_utilization(new_vre_z, potential_z, cap2area, use_area=False)
 
     # Convert installed GW to km²
-    util_df["installed_area"] = util_df["installed"] / util_df["g"].map(
-        CAPACITY_TO_AREA
-    )
-    util_df["potential_area"] = util_df["potential"] / util_df["g"].map(
-        CAPACITY_TO_AREA
-    )
+    util_df["installed_area"] = util_df["installed"] / util_df["g"].map(cap2area)
+    util_df["potential_area"] = util_df["potential"] / util_df["g"].map(cap2area)
 
     # Aggregate to country level
     country_df = (
         util_df.groupby("z")[["installed_area", "potential_area"]].sum().reset_index()
     )
-    country_df["country_area_km2"] = country_df["z"].map(COUNTRY_AREA_KM2)
+    country_df["country_area_km2"] = country_df["z"].map(country_areas)
     country_df["remaining_potential"] = (
         country_df["potential_area"] - country_df["installed_area"]
     )
