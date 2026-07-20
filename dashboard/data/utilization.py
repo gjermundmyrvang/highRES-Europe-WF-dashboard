@@ -28,7 +28,7 @@ def calculate_utilization(new_vre_z, potential_z, cap2area, use_area=False):
     # If potential > 0, calculate utilization as installed/potential * 100. Otherwise set it to NaN
     df["utilization_pct"] = np.where(
         df["potential"] > 0,
-        (df["installed"] / df["potential"] * 100),
+        (df["installed"] / df["potential"] * 100).clip(upper=100),
         np.nan,
     )
     df["country_name"] = df["z"].apply(get_country_name)
@@ -61,7 +61,7 @@ def calculate_utilization_region(new_vre_z, potential_z, cap2area, use_area=Fals
     # If potential > 0, calculate utilization as installed/potential * 100. Otherwise set it to NaN
     df["utilization_pct"] = np.where(
         df["potential"] > 0,
-        (df["installed"] / df["potential"] * 100),
+        (df["installed"] / df["potential"] * 100).clip(upper=100),
         np.nan,
     )
     df["country_name"] = df["z"].apply(get_country_name)
@@ -93,19 +93,3 @@ def calculate_country_land_use(new_vre_z, potential_z, country_areas, cap2area):
 
     country_df["country_name"] = country_df["z"].apply(get_country_name)
     return country_df
-
-
-def aggregate_potential(df):
-    df = df[df["g"] != "HydroRoR"]
-    return df.groupby(["g"], as_index=False)["value"].sum()
-
-
-def capacity_to_area(df):
-    df = df.copy()
-
-    df["factor"] = df["g"].map(CAPACITY_TO_AREA)
-    df = df.dropna(subset=["factor"])
-
-    df["area_km2"] = df["value"] * df["factor"]
-
-    return df
