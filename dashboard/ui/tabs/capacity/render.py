@@ -7,9 +7,7 @@ from data.utilization import (
 )
 from data.country_names import get_country_name
 from data.constants import VRE_TECHS
-from .figures import (
-    render_capacity_pies,
-)
+from ..figures import render_capacity_pies, render_tot_bar_chart
 from ui.components import filter_countries
 from data.constants import TECH_ICONS
 from ..shared import render_key_data

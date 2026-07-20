@@ -1,5 +1,5 @@
 import streamlit as st
-from ..figures import render_tech_bar_chart, render_country_bar_chart, render_pivot
+from ...figures import render_tech_bar_chart, render_country_bar_chart, render_pivot
 
 
 def render_breakdown(util_df, unit_label):
