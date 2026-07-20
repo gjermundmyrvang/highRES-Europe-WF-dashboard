@@ -103,13 +103,19 @@ def main():
     )
 
     with tab1:
-        render_overview(data, sets, scenario_gdx)
+        inflation_factor, selected_currency, rate = render_overview(
+            data, sets, scenario_gdx
+        )
 
     with tab2:
         render_map(data, geo)
 
     with tab3:
         render_scenarios(all_scenarios)
+    with tab5:
+        render_scenarios(
+            all_scenarios, config, inflation_factor, selected_currency, rate
+        )
 
 
 if __name__ == "__main__":
