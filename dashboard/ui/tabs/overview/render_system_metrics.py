@@ -78,7 +78,7 @@ def render_system_metrics(data, sets):
                 total_demand_gwh * 1000
             )
             st.metric(
-                "**System Average Cost**",
+                ":material/cadence: **Normalized by Demand**",
                 f"{cost_per_mwh:.2f} {selected_currency['iso_code']}/MWh",
             )
 
