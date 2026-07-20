@@ -74,6 +74,24 @@ def area_reference(km2: float) -> str:
         return f"≈ the size of {closest}"
 
 
+CAPACITY_TO_AREA = {
+    "Solar": 0.04,
+    "Windoffshore": 0.005,
+    "Windonshore": 0.0024,
+    "HydroRoR": 0.001,
+    "Windonshore_OF": 0.0024,
+    "Windonshore_F": 0.0024,
+    "Windoffshorefloating": 0.005,
+}
+
+
+def get_capacity_to_area(data: dict) -> dict:
+    if "gen_cap2area" in data and not data["gen_cap2area"].empty:
+        cap2area = data["gen_cap2area"].set_index("g").to_dict()["value"]
+        return cap2area
+    return CAPACITY_TO_AREA  # fallback
+
+
 # TODO: Provide correct key value labels
 COST_COMPONENTS = {
     "Generation": {
