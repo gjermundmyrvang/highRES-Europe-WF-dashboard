@@ -38,8 +38,15 @@ TECH_COLORS = {
     "Export": "#c13a00",
 }
 
-VRE_TECHS = {"Solar", "Windonshore", "Windoffshore", "WindoffshoreFloat", "HydroRoR"}
-
+VRE_TECHS = {
+    "Solar",
+    "Windonshore",
+    "Windoffshore",
+    "WindoffshoreFloat",
+    "HydroRoR",
+    "Windonshore_OF",
+    "Windonshore_F",
+    "Windoffshorefloating",
 }
 
 # TODO: Find better references?
