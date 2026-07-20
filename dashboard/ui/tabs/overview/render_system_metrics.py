@@ -7,9 +7,8 @@ from data.cost_transformer import (
     format_money,
 )
 from data_loader import scalar, table
-from ..shared import render_key_data
-from data.country_names import get_country_name
-from data.constants import COST_COMPONENTS
+from ..shared.key_data import render_key_data
+from data.constants import COST_COMPONENTS, get_country_name
 
 
 def render_system_metrics(data, sets):
@@ -34,7 +33,7 @@ def render_system_metrics(data, sets):
 
     # Capacity Overview
     st.subheader("Installed Capacity")
-    render_key_data(data)
+    render_key_data(data, sets)
 
     st.divider()
 
@@ -72,6 +71,16 @@ def render_system_metrics(data, sets):
                 delta=f"×{inflation_factor} inflation | {delta_str}",
             )
             st.caption(f"Raw model output: £{format_money(gbp_value)} (2010 GBP)")
+            # Cost per MWh in selected currency
+            demand_df = data["demand"]
+            total_demand_gwh = demand_df["value"].sum()
+            cost_per_mwh = adjust_currency(adjusted_gbp, rate) / (
+                total_demand_gwh * 1000
+            )
+            st.metric(
+                "**System Average Cost**",
+                f"{cost_per_mwh:.2f} {selected_currency['iso_code']}/MWh",
+            )
 
     with breakdown_col:
         # Cost breakdown
@@ -87,6 +96,8 @@ def render_system_metrics(data, sets):
             )
         else:
             st.caption("Select a category above to see the breakdown.")
+
+    return inflation_factor, selected_currency, rate
 
 
 def _render_cost_settings():
@@ -150,11 +161,18 @@ def _render_cost_breakdown(
         delta=f"{category_pct}% of total system cost",
     )
 
-    cols = st.columns(len(components), border=True, gap="large")
-    for col, var in zip(cols, components):
-        if var not in data or data[var].empty:
-            col.metric(var, "N/A", help="Not available in this scenario")
-            continue
+    shown_components = {}
+    not_shown = set()
+
+    for key, value in components.items():
+        if key not in data or data[key].empty:
+            not_shown.add(key)
+        else:
+            shown_components[key] = value
+
+    num_cols = 4
+    cols = st.columns(num_cols, gap="large")
+    for i, var in enumerate(shown_components):
         # Get raw value in GBP millions and convert to full value
         raw_gbp = data[var]["value"].sum() * 1_000_000
 
@@ -163,4 +181,7 @@ def _render_cost_breakdown(
         converted = adjust_currency(adjusted_gbp, rate)
         formatted = format_money(converted)
 
-        col.metric(var, f"{symbol}{formatted}")
+        cols[i % num_cols].metric(var, f"{symbol}{formatted}", border=True)
+
+    if not_shown:
+        st.info(f"Not shown (not included in scenario): {', '.join(sorted(not_shown))}")
