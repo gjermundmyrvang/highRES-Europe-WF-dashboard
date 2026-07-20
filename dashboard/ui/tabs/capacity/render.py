@@ -19,13 +19,14 @@ from .utilization import (
     render_breakdown,
     render_land_usage,
 )
+from data_loader import table
 
 
 def render_capacity(df, sets):
     # ----- CAPACITY --------
     st.title("Capacity Data")
 
-    render_key_data(df)
+    render_key_data(df, sets)
 
     _render_capacity_overview(df, sets)
 
@@ -37,6 +38,8 @@ def render_capacity(df, sets):
 
 
 def _render_capacity_overview(df, sets):
+    vre_table = table(sets, "vre")
+    vre_techs = list(vre_table["g"])
     cap_type = st.radio(
         "Capacity type",
         options=["Total", "New"],
@@ -77,8 +80,8 @@ def _render_capacity_overview(df, sets):
                 .sort_values(ascending=False)
                 .reset_index()
             )
-            vre = tech_totals[tech_totals["g"].isin(VRE_TECHS)]
-            non_vre = tech_totals[~tech_totals["g"].isin(VRE_TECHS)]
+            vre = tech_totals[tech_totals["g"].isin(vre_techs)]
+            non_vre = tech_totals[~tech_totals["g"].isin(vre_techs)]
 
             sub1, sub2 = st.columns(2, border=True, gap="large")
             with sub1:
@@ -110,7 +113,8 @@ def _render_explore_installed_pcap(df, cap_type, top5):
 
     show_vre_only = tech_filter == "Renewables only"
     if show_vre_only:
-        df_filtered = focused[focused["g"].isin(VRE_TECHS)]
+        df_filtered = focused[focused["g"].isin(vre_techs)]
+        all_filtered = all[all["g"].isin(vre_techs)]
     else:
         df_filtered = focused
 

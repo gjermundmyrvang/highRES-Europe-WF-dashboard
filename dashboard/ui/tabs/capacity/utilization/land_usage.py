@@ -113,8 +113,9 @@ def _render_country_detail(land_df, util_df, util_region_df):
         st.columns(len(country_tech_df), border=True), country_tech_df.iterrows()
     ):
         t = row["g"]
+        icon = TECH_ICONS.get(t, ":material/category:")
         col.metric(
-            f"{TECH_ICONS[t]} {t}",
+            f"{icon} {t}",
             f"{row['installed']:,.1f} km²",
             f"{area_reference(row['installed'])}",
         )

@@ -31,7 +31,7 @@ def render_vre_summary(
             vre_cols = st.columns(n_vre_cols)
             for i in range(n_vre_cols):
                 tech = tech_df.iloc[i]["g"]
-                icon = TECH_ICONS[tech]
+                icon = TECH_ICONS.get(tech, ":material/category:")
                 installed = tech_df.iloc[i]["installed"]
                 potential = tech_df.iloc[i]["potential"]
                 util = (installed / potential * 100).round(1) if potential > 0 else 0.0
