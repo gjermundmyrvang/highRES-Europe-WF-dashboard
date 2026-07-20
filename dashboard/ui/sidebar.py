@@ -5,8 +5,7 @@ from data_loader import load_custom_scenarios
 
 def render_sidebar():
     with st.sidebar:
-        st.header(":material/folder_managed: Scenario Settings")
-        st.subheader(":material/create_new_folder: Add more scenarios")
+        st.header(":material/create_new_folder: Add more scenarios")
         folder_path = st.text_input("Folder path")
         if st.button("Scan folder"):
             path = Path(folder_path)
