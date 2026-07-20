@@ -14,18 +14,23 @@ TECH_ICONS = {
 }
 
 TECH_COLORS = {
-    "Solar": "#F5C518",
-    "Windonshore": "#4A90D9",
-    "Windoffshore": "#1B5FA8",
+    "Solar": "#f9d002",
+    "Windonshore": "#235ebc",
+    "Windoffshore": "#6895dd",
     "WindoffshoreFloat": "#0D3B6E",
-    "HydroRoR": "#2ECC71",
-    "HydroRes": "#1A8C4E",
-    "NuclearEPR": "#E74C3C",
-    "NaturalgasCCGTwithCCSnewOT": "#7F8C8D",
-    "NaturalgasOCGTnew": "#95A5A6",
+    "HydroRoR": "#4adbc8",
+    "HydroRes": "#08ad97",
+    "NuclearEPR": "#ff8c00",
+    "NaturalgasCCGTwithCCSnewOT": "#b20101",
+    "NaturalgasOCGTnew": "#d35050",
     "Biomass": "#8E6E53",
     "BiomassCCS": "#6B4F3A",
     "SynCon": "#9B59B6",
+    "Windonshore_OF": "#a9cf22",
+    "Windonshore_F": "#68800e",
+    "Import": "#8a1caf",
+    "Windoffshorefloating": "#74c6f2",
+    "Export": "#c13a00",
 }
 
 VRE_TECHS = {"Solar", "Windonshore", "Windoffshore", "WindoffshoreFloat", "HydroRoR"}
