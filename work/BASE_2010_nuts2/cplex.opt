@@ -1,6 +1,0 @@
-lpmethod 4
-solutiontype 2
-threads 4
-predual 1
-BarOrder 0
-barepcomp 1E-7
