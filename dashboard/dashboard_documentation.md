@@ -67,11 +67,14 @@ _Alternatively open `GAMS Studio` and navigate to `Help` then select `GAMS Licen
 
 ### 2.2 Installation
 
-1. **Clone the fork and check out the dashboard branch:**
+1. **Clone the fork**
 
    ```bash
    git clone https://github.com/gjermundmyrvang/highRES-Europe-WF-dashboard.git
-   git checkout feature/results-dashboard
+   ```
+
+   ```bash
+   cd highRES-Europe-WF-dashboard
    ```
 
 2. **Create and activate the dedicated conda environment:**
@@ -82,6 +85,7 @@ _Alternatively open `GAMS Studio` and navigate to `Help` then select `GAMS Licen
    ```
 
 3. **Configure the dashboard** (see Section 3), then run from the project root:
+
    ```bash
    streamlit run dashboard/app.py
    ```
