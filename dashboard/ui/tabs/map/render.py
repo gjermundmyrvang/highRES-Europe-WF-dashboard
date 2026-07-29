@@ -2,12 +2,13 @@ import streamlit as st
 import plotly.express as px
 from data.constants import TECH_COLORS, TECH_ICONS, get_capacity_to_area
 from data.utilization import calculate_utilization_region
+from ..shared.cost_breakdown import render_cost_breakdown
 
 
-def render_map(data, geo):
+def render_map(data, geo, inflation_factor, selected_currency, rate, gbp_value):
     st.title("Map Exploration")
     st.markdown(
-        "> Displaying overview of installed capacity by technology in countries. **Click** any country to view more in depth information about that country."
+        "> Displaying overview of installed capacity by technology in zones. **Click** any zone to view more in depth information about that zone."
     )
     df = data["var_tot_pcap_z"]
 
@@ -48,7 +49,15 @@ def render_map(data, geo):
                 if st.button(":material/arrow_back: Back to map"):
                     st.session_state.map_selected_country = None
                     st.rerun()
-                _render_country_details(data, selected, var)
+                _render_country_details(
+                    data,
+                    selected,
+                    var,
+                    inflation_factor,
+                    selected_currency,
+                    rate,
+                    gbp_value,
+                )
             else:
                 clicked = _render_map_viz(map_df, geo, selected_tech)
                 if clicked:
@@ -120,7 +129,9 @@ def _get_clicked_country(event) -> str | None:
     return None
 
 
-def _render_country_details(data, country, var):
+def _render_country_details(
+    data, country, var, inflation_factor, selected_currency, rate, gbp_value
+):
     df = data[var]
     country_df = df[df["z"] == country].reset_index()
     cap_type = "total" if ("tot" in var) else "new"
@@ -144,7 +155,7 @@ def _render_country_details(data, country, var):
     vre_techs = set(new_vre_df["g"].unique())
     vre_list_str = ", ".join(vre_techs)
     st.subheader(
-        "How much of potential renewable technology did the model build in this country?"
+        "How much of potential renewable technology did the model build in this zone?"
     )
     st.info(
         f"Only {vre_list_str} are shown --> these are the technologies where the model defines an available potential to compare against."
@@ -170,4 +181,51 @@ def _render_country_details(data, country, var):
         yaxis_title="Region",
         coloraxis_colorbar=dict(title="%"),
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig)
+
+    st.divider()
+
+    # Zone Cost
+    """
+    IMPORTANT: 
+    ------------------
+    This section provides a zone to `render_cost_breakdown` function,
+    but the actual breakdown of the transmission cost needs to be revised.
+    """
+    title_col, setting_col = st.columns(2)
+    with title_col:
+        st.subheader("Zone Costs")
+
+    with setting_col:
+        category = st.segmented_control(
+            "Cost breakdown",
+            options=["Generation", "Storage", "Transmission"],
+            default="Generation",
+            key="country_detail_costs_breakdown",
+        )
+    if category:
+        render_cost_breakdown(
+            data,
+            category,
+            inflation_factor,
+            rate,
+            selected_currency,
+            gbp_value,
+            country,
+        )
+
+    st.divider()
+
+    st.subheader(f"Total Storage in {country}")
+    storage_df = (
+        data["var_tot_store_pcap_z"].groupby(["z", "s"], as_index=False)["value"].sum()
+    )
+    storage_country_df = storage_df[storage_df["z"] == country].reset_index()
+    cols_per_row = 4
+    cols = st.columns(cols_per_row, gap="large")
+    for i, (_, row) in enumerate(storage_country_df.iterrows()):
+        s = row["s"]
+        icon = ":material/category:"
+        cols[i % cols_per_row].metric(
+            f"{icon} {s}", f"{row['value']:.1f} GW", border=True
+        )

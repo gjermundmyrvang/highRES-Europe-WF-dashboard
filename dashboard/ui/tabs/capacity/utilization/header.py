@@ -7,7 +7,7 @@ def render_utilization_header():
         st.markdown("""
         **Installed capacity** comes from `var_new_vre_pcap_r` --> only newly built VRE technologies.
         
-        **Available potential** comes from the `area` dataset, which reports the maximum installable capacity per country and technology based on land availability and resource quality.
+        **Available potential** comes from the `area` dataset, which reports the maximum installable capacity per zone and technology based on land availability and resource quality.
         
         - `HydroRoR` is excluded as its potential is stored as `+INF`
         - **Power (GW)**: direct comparison of installed vs potential capacity
@@ -26,13 +26,11 @@ def render_utilization_header():
     use_area = unit == "Area (km²)"
     unit_label = "km²" if use_area else "GW"
 
-    # Only want to show country land data if area unit is focused
+    # Only want to show zone land data if area unit is focused
     show_land_pct = False
     if use_area:
-        show_land_pct = st.checkbox("Compare against total country land area")
+        show_land_pct = st.checkbox("Compare against total zone area")
     else:
-        st.checkbox(
-            "Compare against total country land area", disabled=True, value=False
-        )
+        st.checkbox("Compare against total zone area", disabled=True, value=False)
 
     return unit, use_area, show_land_pct, unit_label

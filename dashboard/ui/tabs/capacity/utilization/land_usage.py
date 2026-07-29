@@ -16,9 +16,9 @@ def render_land_usage(
     st.subheader("Land Area Context")
     col1, col2 = st.columns(2, border=True, gap="large")
     col1.metric(
-        ":material/public: Total country land",
+        ":material/public: Total zone land",
         f"{country_total_area:,.0f} km²",
-        help="Sum of all country areas in the model",
+        help="Sum of all zone areas in the model",
     )
     col2.metric(
         ":material/solar_power: Land used for VRE",
@@ -43,14 +43,12 @@ def render_land_usage(
                 "installed_area": "#2ECC71",
                 "remaining_country": "#E8E8E8",
             },
-            labels={"value": "Area (km²)", "country_name": "Country", "variable": ""},
+            labels={"value": "Area (km²)", "country_name": "Zone", "variable": ""},
             height=700,
         )
         fig.update_layout(legend=dict(orientation="h", y=-0.1), barmode="stack")
         fig.update_traces(selector={"name": "installed_area"}, name="VRE installed")
-        fig.update_traces(
-            selector={"name": "remaining_country"}, name="Rest of country"
-        )
+        fig.update_traces(selector={"name": "remaining_country"}, name="Rest of zone")
         st.plotly_chart(fig)
 
     with col_detail:
@@ -61,9 +59,9 @@ def render_land_usage(
 
 def _render_country_detail(land_df, util_df, util_region_df):
     selected_country = st.selectbox(
-        "Select country for breakdown",
+        "Select zone for breakdown",
         options=[None] + sorted(land_df["country_name"].unique()),
-        format_func=lambda x: "Select a country..." if x is None else x,
+        format_func=lambda x: "Select a zone..." if x is None else x,
     )
 
     if not selected_country:
@@ -84,9 +82,9 @@ def _render_country_detail(land_df, util_df, util_region_df):
 
     col1, col2 = st.columns(2, border=True, gap="large")
     col1.metric(
-        ":material/public: Total country land",
+        ":material/public: Total zone land",
         f"{country_row['country_area_km2']:,.0f} km²",
-        help="Total land of this country",
+        help="Total land of this zone",
     )
     col2.metric(
         ":material/solar_power: Land used for VRE",

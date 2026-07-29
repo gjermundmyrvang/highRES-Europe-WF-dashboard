@@ -1,22 +1,22 @@
 import streamlit as st
+import pandas as pd
 import plotly.express as px
-from data.constants import TECH_ICONS, area_reference
+from data.constants import TECH_ICONS, area_reference, TECH_COLORS
 from ui.components import filter_countries
+from ..shared.land_use_barchart import render_land_usage_bar
 
 
 def render_land_usage(
     land_df,
     util_df,
     util_region_df,
-    total_installed,
-    total_potential,
 ):
     country_total_area = land_df["country_area_km2"].sum().round(1)
 
-    st.subheader("Land Area Context")
+    st.subheader("Total Area Context")
     col1, col2 = st.columns([0.3, 0.7], border=True, gap="large")
     col1.metric(
-        ":material/public: Total country land",
+        ":material/public: Total zone land",
         f"{country_total_area:,.0f} km²",
         help="Sum of all country areas in the model",
     )
@@ -33,57 +33,91 @@ def render_land_usage(
                 f"{row['installed']:,.0f} km²",
             )
 
+    render_land_usage_bar(util_df, land_df)
+
+    st.space("small")
+
     col_chart, col_detail = st.columns([0.6, 0.4], gap="large")
 
     with col_chart:
+        st.subheader("Zone Area Context")
         view = st.radio(
             "View as",
             options=["Absolute (km²)", "Percentage (%)"],
             horizontal=True,
         )
 
-        land_usage_filtered = filter_countries(
-            land_df.sort_values("installed_area", ascending=True),
-            default=[],
-            key="filter_land_usage",
+        # Apply filter
+        filtered_df = filter_countries(util_df, [], key="filter_land_usage")
+
+        # Aggregate installed area per country and tech
+        tech_country = (
+            filtered_df.groupby(["country_name", "g"])["installed"].sum().reset_index()
         )
+
+        # Add remaining country land
+        country_totals = (
+            tech_country.groupby("country_name")["installed"].sum().reset_index()
+        )
+        country_totals = country_totals.merge(
+            land_df[["country_name", "country_area_km2"]], on="country_name", how="left"
+        )
+        country_totals["remaining"] = (
+            country_totals["country_area_km2"] - country_totals["installed"]
+        )
+
+        # Add remaining as a "tech"
+        remaining_df = country_totals[["country_name", "remaining"]].rename(
+            columns={"remaining": "installed"}
+        )
+        remaining_df["g"] = "Unused land"
+        tech_country = pd.concat([tech_country, remaining_df], ignore_index=True)
+
+        # Sort countries by total installed
+        sort_order = country_totals.sort_values("installed", ascending=False)[
+            "country_name"
+        ].tolist()
+
+        color_map = {**TECH_COLORS, "Unused land": "#E8E8E8"}
+
         if view == "Percentage (%)":
-            x_cols = ["land_use_pct", "remaining_pct"]
-            land_usage_filtered = land_usage_filtered.copy()
-            land_usage_filtered["remaining_pct"] = (
-                100 - land_usage_filtered["land_use_pct"]
+            # Convert installed to % of country area
+            tech_country = tech_country.merge(
+                land_df[["country_name", "country_area_km2"]],
+                on="country_name",
+                how="left",
+            )
+            tech_country["installed"] = (
+                tech_country["installed"] / tech_country["country_area_km2"] * 100
             )
             x_label = "%"
         else:
-            x_cols = ["installed_area", "remaining_country"]
-            x_label = "Area (km²)"
+            x_label = "km²"
 
         fig = px.bar(
-            land_usage_filtered,
-            x=x_cols,
+            tech_country,
+            x="installed",
             y="country_name",
+            color="g",
             orientation="h",
-            color_discrete_map={
-                x_cols[0]: "#2ECC71",
-                x_cols[1]: "#E8E8E8",
-            },
-            labels={"value": x_label, "country_name": "Country", "variable": ""},
+            color_discrete_map=color_map,
+            labels={"installed": x_label, "country_name": "Country", "g": "Technology"},
             height=700,
+            category_orders={"country_name": sort_order},
         )
-        fig.update_layout(legend=dict(orientation="h", y=-0.1), barmode="stack")
-        fig.update_traces(selector={"name": x_cols[0]}, name="VRE installed")
-        fig.update_traces(selector={"name": x_cols[1]}, name="Rest of country")
+        fig.update_layout(barmode="stack", legend=dict(orientation="h", y=-0.1))
         st.plotly_chart(fig)
 
     with col_detail:
+        st.subheader("Zone Breakdown")
         _render_country_detail(land_df, util_df, util_region_df)
 
 
 def _render_country_detail(land_df, util_df, util_region_df):
     selected_country = st.selectbox(
-        "Select country for breakdown",
+        "Select zone for breakdown",
         options=[None] + sorted(land_df["country_name"].unique()),
-        format_func=lambda x: "Select a country..." if x is None else x,
+        format_func=lambda x: "Select a zone..." if x is None else x,
     )
 
     if not selected_country:
@@ -99,9 +133,10 @@ def _render_country_detail(land_df, util_df, util_region_df):
     excluded = all_techs - shown_techs
 
     country_row = land_df[land_df["country_name"] == selected_country].iloc[0]
+    selected_z = country_row["z"]
 
     st.metric(
-        ":material/public: Total country land",
+        ":material/public: Total zone land",
         f"{country_row['country_area_km2']:,.0f} km²",
         help="Total land of this country",
     )
@@ -125,6 +160,9 @@ def _render_country_detail(land_df, util_df, util_region_df):
     if excluded:
         st.info(f"Not shown (no installed capacity): {', '.join(sorted(excluded))}")
 
+    # Land usage barchart
+    render_land_usage_bar(util_df, land_df, selected_z)
+
     # Regional Data
     st.caption("Land occupied by newly installed renewables in regions")
     region_df = util_region_df[
@@ -142,11 +180,27 @@ def _render_country_detail(land_df, util_df, util_region_df):
         fill_value=0,
     )
 
+    highlight = st.radio(
+        "Highlight",
+        ["Max", "Min", "None"],
+        horizontal=True,
+        index=2,
+        key="radio_regions_land_usage",
+    )
+
     table["Total"] = table.sum(axis=1)
 
-    table = table.sort_values("Total", ascending=False)
+    table = pd.DataFrame(table.sort_values("Total", ascending=False))
+    table.style.format("{:.1f}")
 
-    st.dataframe(table.style.format("{:.1f}"))
+    if highlight == "None":
+        table = table.style.highlight_null()
+    elif highlight == "Max":
+        table = table.style.highlight_max(axis=0)
+    else:
+        table = table.style.highlight_min(axis=0)
+
+    st.dataframe(table)
 
     # Display regions with nothing installed in infobox
     if inactive_regions:

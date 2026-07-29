@@ -1,14 +1,16 @@
 import streamlit as st
+from ..shared.cost_breakdown import render_cost_breakdown
 from data.cost_transformer import (
     adjust_currency,
     adjust_inflation,
     get_exchange_rate,
     get_currencies,
     format_money,
+    get_total_costs_raw,
 )
 from data_loader import scalar, table
 from ..shared.key_data import render_key_data
-from data.constants import COST_COMPONENTS, get_country_name
+from data.constants import get_country_name
 
 
 def render_system_metrics(data, sets):
@@ -37,17 +39,22 @@ def render_system_metrics(data, sets):
 
     st.divider()
 
+    # Total Storage Overview
+    st.subheader("Total Storage")
+    _render_storage_overview(data)
+
+    st.divider()
+
     total_col, breakdown_col = st.columns([0.3, 0.7], gap="large")
     with total_col:
         # Total Cost
         st.subheader("Costs")
         inflation_factor, selected_currency = _render_cost_settings()
 
-        total_cost = data["costs"].iloc[0]["value"]
-        gbp_value = total_cost * 1_000_000
-        adjusted_gbp = adjust_inflation(gbp_value, inflation_factor)
         rate, is_offline = get_exchange_rate(selected_currency["iso_code"])
-        adjusted = format_money(adjust_currency(adjusted_gbp, rate))
+
+        gbp_value, adjusted_gbp = get_total_costs_raw(data, inflation_factor, rate)
+        adjusted = format_money(adjusted_gbp)
 
         # Handle if user does not have internet connection
         if is_offline:
@@ -74,9 +81,7 @@ def render_system_metrics(data, sets):
             # Cost per MWh in selected currency
             demand_df = data["demand"]
             total_demand_gwh = demand_df["value"].sum()
-            cost_per_mwh = adjust_currency(adjusted_gbp, rate) / (
-                total_demand_gwh * 1000
-            )
+            cost_per_mwh = adjusted_gbp / (total_demand_gwh * 1000)
             st.metric(
                 ":material/cadence: **Normalized by Demand**",
                 f"{cost_per_mwh:.2f} {selected_currency['iso_code']}/MWh",
@@ -85,19 +90,31 @@ def render_system_metrics(data, sets):
     with breakdown_col:
         # Cost breakdown
         category = st.segmented_control(
-            "Cost breakdown",
+            "**Cost breakdown**",
             options=["Generation", "Storage", "Transmission"],
             default=None,
         )
 
         if category:
-            _render_cost_breakdown(
+            render_cost_breakdown(
                 data, category, inflation_factor, rate, selected_currency, gbp_value
             )
         else:
             st.caption("Select a category above to see the breakdown.")
 
-    return inflation_factor, selected_currency, rate
+    return inflation_factor, selected_currency, rate, gbp_value
+
+
+def _render_storage_overview(data):
+    storage_df = data["var_tot_store_pcap"]
+    cols_per_row = 4
+    cols = st.columns(cols_per_row, gap="large")
+    for i, (_, row) in enumerate(storage_df.iterrows()):
+        s = row["s"]
+        icon = ":material/category:"
+        cols[i % cols_per_row].metric(
+            f"{icon} {s}", f"{row['value']:.1f} GW", border=True
+        )
 
 
 def _render_cost_settings():
@@ -131,57 +148,3 @@ def _render_countries(sets):
         f":material/public: &nbsp; {len(df)} countries included in this scenario"
     ):
         st.dataframe(df_names, hide_index=True)
-
-
-def _render_cost_breakdown(
-    data, category, inflation_factor, rate, selected_currency, gbp_value
-):
-    components = COST_COMPONENTS[category]
-    symbol = selected_currency["symbol"]
-
-    # Sum all component values and convert from millions to full value
-    category_total_gbp = (
-        sum(
-            data[var]["value"].sum()
-            for var in components
-            if var in data and not data[var].empty
-        )
-        * 1_000_000
-    )
-
-    # Adjust for inflation and convert to selected currency
-    category_total_adjusted_gbp = adjust_inflation(category_total_gbp, inflation_factor)
-    category_total_converted = adjust_currency(category_total_adjusted_gbp, rate)
-    category_total_formatted = format_money(category_total_converted)
-    category_pct = (category_total_gbp / gbp_value * 100).round(1)
-
-    st.metric(
-        f":material/payments: **{category} Total**",
-        f"{symbol}{category_total_formatted}",
-        delta=f"{category_pct}% of total system cost",
-    )
-
-    shown_components = {}
-    not_shown = set()
-
-    for key, value in components.items():
-        if key not in data or data[key].empty:
-            not_shown.add(key)
-        else:
-            shown_components[key] = value
-
-    num_cols = 4
-    cols = st.columns(num_cols, gap="large")
-    for i, var in enumerate(shown_components):
-        # Get raw value in GBP millions and convert to full value
-        raw_gbp = data[var]["value"].sum() * 1_000_000
-
-        # Adjust for inflation and convert to selected currency
-        adjusted_gbp = adjust_inflation(raw_gbp, inflation_factor)
-        converted = adjust_currency(adjusted_gbp, rate)
-        formatted = format_money(converted)
-
-        cols[i % num_cols].metric(var, f"{symbol}{formatted}", border=True)
-
-    if not_shown:
-        st.info(f"Not shown (not included in scenario): {', '.join(sorted(not_shown))}")

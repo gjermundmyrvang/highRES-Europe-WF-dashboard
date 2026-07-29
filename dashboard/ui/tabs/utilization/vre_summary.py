@@ -6,8 +6,8 @@ from data.constants import TECH_ICONS
 def render_vre_summary(
     util_df, total_installed, total_potential, util_pct, unit_label, unit
 ):
-    st.subheader("System Overview")
-    st.caption(f"Using {unit_label} as unit")
+    st.header("System Overview")
+    st.badge(f"Using **{unit_label}** as unit")
     total_col, vre_col = st.columns([0.3, 0.7])
     with total_col:
         st.markdown("#### All VRE combined")

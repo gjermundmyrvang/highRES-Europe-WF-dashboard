@@ -17,7 +17,7 @@ def render_breakdown(util_df, unit_label):
         render_tech_bar_chart(tech_df, unit_label)
 
     with col_bar:
-        st.caption("BY COUNTRY")
+        st.caption("BY ZONE")
         country_df = (
             util_df.groupby(["z", "country_name"])[["installed", "potential"]]
             .sum()
@@ -33,5 +33,5 @@ def render_breakdown(util_df, unit_label):
         render_country_bar_chart(country_df, unit_label)
 
     with col_pivot:
-        st.caption("BY COUNTRY & TECH")
+        st.caption("BY ZONE & TECH")
         render_pivot(util_df)

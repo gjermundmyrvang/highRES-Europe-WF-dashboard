@@ -29,10 +29,8 @@ def render_utilization_header():
     # Only want to show country land data if area unit is focused
     show_land_pct = False
     if use_area:
-        show_land_pct = st.checkbox("Compare against total country land area")
+        show_land_pct = st.checkbox("Compare against total zone land area")
     else:
-        st.checkbox(
-            "Compare against total country land area", disabled=True, value=False
-        )
+        st.checkbox("Compare against total zone land area", disabled=True, value=False)
 
     return unit, use_area, show_land_pct, unit_label

@@ -30,14 +30,14 @@ def _render_capacity_overview(df, sets):
         .sort_values(ascending=False)
         .reset_index()
     )
-    # Top 5 countries by total installed
+    # Top 5 zones by total installed
     top5 = all.head(5)
 
     col_countries, col_util = st.columns(2, gap="large")
 
     with col_countries:
         with st.container(border=True):
-            st.caption("TOP 5 COUNTRIES BY INSTALLED CAPACITY")
+            st.caption(f"TOP 5 ZONES BY {cap_type.upper()} INSTALLED CAPACITY")
             for i, row in top5.iterrows():
                 st.metric(
                     f"{i + 1}.{row['country_name']}",
@@ -79,7 +79,7 @@ def _render_capacity_overview(df, sets):
 
 
 def _render_explore_installed_pcap(df, cap_type, top5, vre_techs):
-    st.subheader("What's been installed by countries?")
+    st.subheader("What's been installed by zones?")
 
     tech_filter = st.radio(
         "Technologies",
@@ -102,10 +102,10 @@ def _render_explore_installed_pcap(df, cap_type, top5, vre_techs):
         df_filtered = focused
         all_filtered = all
 
-    st.subheader("All Countries")
+    st.subheader("By All Zones")
     render_tot_bar_chart(all_filtered)
 
-    st.subheader("By Countries")
+    st.subheader("By Zones")
 
     top5list = top5["country_name"].tolist()
 

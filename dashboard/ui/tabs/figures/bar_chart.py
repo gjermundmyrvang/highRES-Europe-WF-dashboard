@@ -12,7 +12,7 @@ def render_country_bar_chart(df, unit_label):
         orientation="h",
         labels={
             "util_pct": f"Utilization (%): {unit_label}",
-            "country_name": "Country",
+            "country_name": "Zone",
         },
         color="util_pct",
         color_continuous_scale="Greens",

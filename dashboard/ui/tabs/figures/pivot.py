@@ -18,7 +18,6 @@ def render_pivot(df):
         text_auto=".0f",
         aspect="auto",
         color_continuous_scale="blues",
-        title="Utilization by Country and Technology (%)",
         height=600,
     )
     fig.update_layout(xaxis_title="Technology", yaxis_title=None)

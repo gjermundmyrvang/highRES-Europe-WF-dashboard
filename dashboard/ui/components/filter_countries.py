@@ -6,7 +6,7 @@ def filter_countries(df, default=None, key="filter_countries"):
     if default is None:
         default = all_countries[:5]
     selected_countries = st.multiselect(
-        "Filter countries",
+        "Filter zones",
         options=all_countries,
         default=default,
         key=key,

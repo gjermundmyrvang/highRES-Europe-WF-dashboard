@@ -10,7 +10,7 @@ def render_breakdown(util_df, unit_label):
     col_tech, col_bar, col_pivot = st.columns(3, gap="large")
 
     with col_tech:
-        st.caption("BY TECHNOLOGY")
+        st.badge("By Technology", icon=":material/bolt:", color="blue")
         tech_df = util_df.groupby("g")[["installed", "potential"]].sum().reset_index()
         tech_df["util_pct"] = (
             (tech_df["installed"] / tech_df["potential"] * 100).clip(upper=100).round(1)
@@ -21,7 +21,7 @@ def render_breakdown(util_df, unit_label):
         render_tech_bar_chart(tech_df, unit_label)
 
     with col_bar:
-        st.caption("BY COUNTRY")
+        st.badge("By Zone", icon=":material/public:", color="green")
         country_df = (
             util_df.groupby(["z", "country_name"])[["installed", "potential"]]
             .sum()
@@ -37,5 +37,5 @@ def render_breakdown(util_df, unit_label):
         render_country_bar_chart(country_df, unit_label)
 
     with col_pivot:
-        st.caption("BY COUNTRY & TECH")
+        st.badge("By Zone & Technology", icon=":material/grid_view:", color="orange")
         render_pivot(util_df)

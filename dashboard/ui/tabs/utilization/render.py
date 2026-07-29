@@ -69,6 +69,4 @@ def _render_land_util(potential_z, new_vre_z, cap2area, use_area, country_areas)
     land_df = calculate_country_land_use(
         new_vre_z_land, potential_z_land, country_areas, cap2area
     )
-    render_land_usage(
-        land_df, util_df, util_region_df, total_installed, total_potential
-    )
+    render_land_usage(land_df, util_df, util_region_df)
