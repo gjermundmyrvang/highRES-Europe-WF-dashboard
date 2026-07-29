@@ -116,14 +116,12 @@ localrules:
     compress_vre_gdx,
     compress_hydrores_inflow,
     convert_results_db_parquet,
-    dashboard,
     run_gams,
 
 
 rule all:
     input:
         expand(modelpath / config["target"], zip, psys_scenario=psys_scenarios, year=years, spatial=spatials),
-        expand(modelpath / "dashboard.done", zip, psys_scenario=psys_scenarios, year=years, spatial=spatials),
 
 
 
@@ -638,13 +636,3 @@ rule convert_results_db_parquet:
         "envs/build_vre_parquet.yml"
     script:
         "scripts/convert_results_sqlite_parquet.py"
-
-rule dashboard:
-    input:
-        rules.run_gams.output.modelresults,
-    output:
-        touch(modelpath / "dashboard.done"),
-    params:
-        results_path=str(modelpath),
-    shell:
-        "streamlit run dashboard/app.py -- --results-path {params.results_path}"
