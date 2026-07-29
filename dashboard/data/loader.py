@@ -34,6 +34,8 @@ def load_scenario_summary(
 
     # Cost breakdown, total values per category (e.g generation costs)
     cost_dict = generate_cost_breakdown(data, inflation_factor, rate)
+    # Hide column with the category total cost in gbp (not relevant here)
+    cost_dict_filtered = {k: v for k, v in cost_dict.items() if "_gbp" not in k}
 
     # Storage breakdown
     storage_df = data["var_tot_store_pcap"].groupby("s")["value"].sum()
@@ -49,6 +51,6 @@ def load_scenario_summary(
         "gbp_value": gbp_value,
         "tech_breakdown": tech_breakdown,
         "vre_techs": vre_techs,
-        "cost_breakdown": cost_dict,
+        "cost_breakdown": cost_dict_filtered,
         "storage_breakdown": storage_df,
     }
