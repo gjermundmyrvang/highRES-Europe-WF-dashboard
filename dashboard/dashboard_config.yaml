@@ -1,7 +1,36 @@
-results_path: work
+results_path: dashboard/example_scenarios
 
 # Path to GeoJSON file for map visualizations (relative to project root)
-geojson_path: intermediate_data/region/shapes/europe_onshore.geojson
+geojson_path: dashboard/shapes/europe_onshore.geojson
 
 # Path to gams
-gams_path: "/Library/Frameworks/GAMS.framework/Versions/53/Resources/gams"
+gams_path: "/Library/Frameworks/GAMS.framework/Versions/53/Resources/" #(back)slash at the end is required
+
+variables: [
+    "var_tot_pcap",
+    "var_tot_pcap_z",
+    "var_new_pcap",
+    "var_new_pcap_z",
+    "var_new_vre_pcap_r",
+    "var_tot_trans_pcap",
+    "costs",
+    "costs_gen_capex",
+    "costs_gen_fom",
+    "costs_gen_varom",
+    "costs_gen_start",
+    "costs_gen_vreconnection",
+    "costs_store_capex",
+    "costs_store_fom",
+    "costs_store_varom",
+    "costs_store_start",
+    "costs_trans_capex",
+    "costs_trans_fom",
+    "area",
+    "gen_cap2area",
+    "demand",
+    "var_tot_store_pcap",
+    "var_tot_store_pcap_z",
+]
+
+
+sets: ["hfirst", "hlast", "day", "month", "year", "vre", "z"]
