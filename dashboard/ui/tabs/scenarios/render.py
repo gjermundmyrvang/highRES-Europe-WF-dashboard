@@ -38,10 +38,20 @@ def scenario_to_tidy(summary: dict, scenario_name: str) -> pd.DataFrame:
             value = summary[key]
             rows.append((scenario_name, category, "", label, value))
 
-    # These loops adds data for the category mix section `category_mix`
     for tech, value in summary.get("tech_breakdown", {}).items():
         rows.append(
-            (scenario_name, "category_mix", "renewable technologies (GW)", tech, value)
+            (scenario_name, "category_mix", "new installed capacity (GW)", tech, value)
+        )
+
+    for tech, value in summary.get("vre_breakdown", {}).items():
+        rows.append(
+            (
+                scenario_name,
+                "category_mix",
+                "new installed renewable capacity (GW)",
+                tech,
+                value,
+            )
         )
 
     for tech, value in summary.get("storage_breakdown", {}).items():
@@ -49,16 +59,6 @@ def scenario_to_tidy(summary: dict, scenario_name: str) -> pd.DataFrame:
 
     for component, value in summary.get("cost_breakdown", {}).items():
         rows.append((scenario_name, "category_mix", "costs", component, value))
-
-    # This adds data for the breakdown comparison section
-    for tech, value in summary.get("tech_breakdown", {}).items():
-        rows.append((scenario_name, "capacity", "all technologies", tech, value))
-
-    for component, value in summary.get("cost_breakdown", {}).items():
-        rows.append((scenario_name, "cost", "costs", component, value))
-
-    for tech, value in summary.get("storage_breakdown", {}).items():
-        rows.append((scenario_name, "storage", "storages", tech, value))
 
     columns = ["scenario", "category", "dimension", "item", "value"]
     return pd.DataFrame(rows, columns=columns)

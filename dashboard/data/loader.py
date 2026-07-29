@@ -29,8 +29,12 @@ def load_scenario_summary(
 
     vre_techs = list(table(sets, "vre")["g"])
 
-    # Tech breakdown for VRE comparison
+    # Tech breakdown for new installed capacity
     tech_breakdown = data["var_new_pcap"].groupby("g")["value"].sum()
+
+    # VRE breakdown
+    new_vre_df = data["var_new_vre_pcap_r"]
+    by_new_vre_tech = new_vre_df.groupby("g")["value"].sum()
 
     # Cost breakdown, total values per category (e.g generation costs)
     cost_dict = generate_cost_breakdown(data, inflation_factor, rate)
@@ -50,6 +54,7 @@ def load_scenario_summary(
         "cost_raw": adjusted_cost,
         "gbp_value": gbp_value,
         "tech_breakdown": tech_breakdown,
+        "vre_breakdown": by_new_vre_tech,
         "vre_techs": vre_techs,
         "cost_breakdown": cost_dict_filtered,
         "storage_breakdown": storage_df,
