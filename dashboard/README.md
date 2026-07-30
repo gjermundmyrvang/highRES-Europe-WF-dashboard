@@ -102,11 +102,11 @@ In addition, scenario discovery raises explicit `FileNotFoundError` exceptions i
 
 ### 3.2 Supported scenario folder structures:
 
-- **Standard (model-generated):** `work/scenario_name/results.gdx`
-- **Custom (flat):** `custom_folder/scenario_name.gdx`
+- **Standard (model-generated):** `results_path/scenario_name/results.gdx`
+- **Custom (flat):** `results_path/scenario_name.gdx`
 
 Users can also add extra scenario folders at runtime via the sidebar without touching the config file.
-**NB:** runtime added scenarios currently only works with **Custom (flat):** `custom_folder/scenario_name.gdx`.
+**NB:** runtime added scenarios currently only works with **Custom (flat):** `results_path/scenario_name.gdx`.
 
 ### 3.3 Using Regional or Custom Zones
 
