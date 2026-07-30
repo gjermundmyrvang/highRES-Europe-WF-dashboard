@@ -54,12 +54,12 @@ def render_map(data, geo, inflation_factor, selected_currency, rate, gbp_value):
             key="map_dimension_select",
         )
         if DIMENSIONS[dimension_key].LABEL == "Cost":
-            result, var = DIMENSIONS[dimension_key].render_controls(
+            result = DIMENSIONS[dimension_key].render_controls(
                 data, selected, inflation_factor, rate
             )
 
         else:
-            result, var = DIMENSIONS[dimension_key].render_controls(data, selected)
+            result = DIMENSIONS[dimension_key].render_controls(data, selected)
 
     with col_map:
         header_str = f"{selected_country_name}" if selected else "Map"
@@ -72,7 +72,6 @@ def render_map(data, geo, inflation_factor, selected_currency, rate, gbp_value):
                 _render_country_details(
                     data,
                     selected,
-                    var,
                     inflation_factor,
                     selected_currency,
                     rate,
@@ -151,10 +150,17 @@ def _get_clicked_country(event) -> str | None:
 
 
 def _render_country_details(
-    data, country, var, inflation_factor, selected_currency, rate, gbp_value
+    data, country, inflation_factor, selected_currency, rate, gbp_value
 ):
-    var = var or "var_tot_pcap_z"
-    cap_type = "total" if ("tot" in var) else "new"
+
+    cap_type = st.radio(
+        "Capacity type",
+        options=["Total", "New"],
+        horizontal=True,
+        key="country_detail_cap_type_radio",
+    )
+
+    var = "var_tot_pcap_z" if cap_type == "Total" else "var_new_pcap_z"
 
     df = data[var]
     country_df = df[df["z"] == country].reset_index()

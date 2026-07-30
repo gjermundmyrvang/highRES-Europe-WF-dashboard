@@ -8,9 +8,7 @@ from .base import MapDimensionResult
 LABEL = "Cost"
 
 
-def render_controls(
-    data, selected, inflation_factor, rate
-) -> tuple[MapDimensionResult, str]:
+def render_controls(data, selected, inflation_factor, rate) -> MapDimensionResult:
     disable_dropdown = selected is not None
 
     with st.container(border=True):
@@ -27,4 +25,4 @@ def render_controls(
     # the same naive filter as elsewhere in the app. See TODO in
     # cost_transformer.generate_total_category_breakdown().
 
-    return MapDimensionResult(df=agg, legend_label=f"{category} Cost", color=color), ""
+    return MapDimensionResult(df=agg, legend_label=f"{category} Cost", color=color)

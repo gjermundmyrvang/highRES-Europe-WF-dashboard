@@ -6,7 +6,7 @@ from .base import MapDimensionResult
 LABEL = "Storage"
 
 
-def render_controls(data, selected) -> tuple[MapDimensionResult, str]:
+def render_controls(data, selected) -> MapDimensionResult:
     all_storage = sorted(data["var_tot_store_pcap_z"]["s"].unique())
     disable_dropdown = selected is not None
 
@@ -24,4 +24,4 @@ def render_controls(data, selected) -> tuple[MapDimensionResult, str]:
 
     color = random_hex_color(selected_storage)
 
-    return MapDimensionResult(df=agg, legend_label="GW", color=color), ""
+    return MapDimensionResult(df=agg, legend_label="GW", color=color)
