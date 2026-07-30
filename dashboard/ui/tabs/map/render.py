@@ -1,7 +1,7 @@
 import streamlit as st
 import plotly.express as px
+
 from data.constants import (
-    TECH_COLORS,
     TECH_ICONS,
     get_capacity_to_area,
     get_country_name,
