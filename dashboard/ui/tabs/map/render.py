@@ -1,8 +1,14 @@
 import streamlit as st
 import plotly.express as px
-from data.constants import TECH_COLORS, TECH_ICONS, get_capacity_to_area
+from data.constants import (
+    TECH_COLORS,
+    TECH_ICONS,
+    get_capacity_to_area,
+    get_country_name,
+)
 from data.utilization import calculate_utilization_region
 from ..shared.cost_breakdown import render_cost_breakdown
+from .dimensions import DIMENSIONS
 
 
 def render_map(data, geo, inflation_factor, selected_currency, rate, gbp_value):
@@ -41,7 +47,19 @@ def render_map(data, geo, inflation_factor, selected_currency, rate, gbp_value):
 
     with col_controls:
         st.subheader(":material/tune: Controls")
-        map_df, selected_tech, var = _render_controls(data, selected)
+        dimension_key = st.selectbox(
+            "Dimension",
+            options=list(DIMENSIONS.keys()),
+            format_func=lambda k: DIMENSIONS[k].LABEL,
+            key="map_dimension_select",
+        )
+        if DIMENSIONS[dimension_key].LABEL == "Cost":
+            result, var = DIMENSIONS[dimension_key].render_controls(
+                data, selected, inflation_factor, rate
+            )
+
+        else:
+            result, var = DIMENSIONS[dimension_key].render_controls(data, selected)
 
     with col_map:
         header_str = f"{selected_country_name}" if selected else "Map"
@@ -61,7 +79,9 @@ def render_map(data, geo, inflation_factor, selected_currency, rate, gbp_value):
                     gbp_value,
                 )
             else:
-                clicked = _render_map_viz(map_df, geo, selected_tech)
+                clicked = _render_map_viz(
+                    result.df, geo, result.color, result.legend_label
+                )
                 if clicked:
                     st.session_state.map_selected_country = clicked
                     st.rerun()
@@ -99,8 +119,7 @@ def _render_controls(data, selected):
     return agg, selected_tech, var
 
 
-def _render_map_viz(df, geo, selected_tech):
-    tech_color = TECH_COLORS.get(selected_tech, "#1B5FA8")
+def _render_map_viz(df, geo, color, legend_label):
     fig = px.choropleth(
         df,
         geojson=geo,
@@ -110,10 +129,10 @@ def _render_map_viz(df, geo, selected_tech):
         color_continuous_scale=[
             [0, "#f0f0f0"],
             [0.001, "#e8f0fe"],
-            [1, tech_color],
+            [1, color],
         ],
         hover_name="country_name",
-        labels={"value": "GW"},
+        labels={"value": legend_label},
     )
     fig.update_geos(fitbounds="locations", visible=False)
     fig.update_layout(height=800, coloraxis_showscale=True)
@@ -134,9 +153,11 @@ def _get_clicked_country(event) -> str | None:
 def _render_country_details(
     data, country, var, inflation_factor, selected_currency, rate, gbp_value
 ):
+    var = var or "var_tot_pcap_z"
+    cap_type = "total" if ("tot" in var) else "new"
+
     df = data[var]
     country_df = df[df["z"] == country].reset_index()
-    cap_type = "total" if ("tot" in var) else "new"
 
     # Installed techs
     st.subheader(f"Installed {cap_type} capacity")
@@ -218,7 +239,7 @@ def _render_country_details(
 
     st.divider()
 
-    st.subheader(f"Total Storage in {country}")
+    st.subheader(f"Total Storage in {get_country_name(country)}")
     storage_df = (
         data["var_tot_store_pcap_z"].groupby(["z", "s"], as_index=False)["value"].sum()
     )
