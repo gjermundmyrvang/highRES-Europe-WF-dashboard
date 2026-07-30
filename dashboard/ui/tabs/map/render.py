@@ -86,38 +86,6 @@ def render_map(data, geo, inflation_factor, selected_currency, rate, gbp_value):
                     st.rerun()
 
 
-def _render_controls(data, selected):
-    all_techs = sorted(data["var_tot_pcap_z"]["g"].unique())
-
-    disable_dropdown = selected != None
-
-    with st.container(border=True):
-        cap_type = st.radio(
-            "Capacity type",
-            options=["Total", "New"],
-            horizontal=True,
-            key="map_cap_type_radio",
-        )
-
-    with st.container(border=True):
-        selected_tech = st.selectbox(
-            "Technology", options=all_techs, disabled=disable_dropdown
-        )
-
-    var = "var_tot_pcap_z" if cap_type == "Total" else "var_new_pcap_z"
-    df = data[var].copy()
-
-    df = df[df["g"] == selected_tech]
-
-    agg = df.groupby(["z", "country_name"])["value"].sum().reset_index()
-
-    # Ensure all zones appear even if they have zero value
-    all_zones = data["var_tot_pcap_z"][["z", "country_name"]].drop_duplicates()
-    agg = all_zones.merge(agg, on=["z", "country_name"], how="left").fillna(0)
-
-    return agg, selected_tech, var
-
-
 def _render_map_viz(df, geo, color, legend_label):
     fig = px.choropleth(
         df,
