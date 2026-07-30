@@ -107,11 +107,18 @@ def main():
     loaded = {}
     results_path = config.get("results_path")
 
+    # Small check if to display warning about using example data
+    if results_path == "dashboard/example_scenarios":
+        st.warning(
+            title=":material/warning: Dashboard running on example data",
+            body="The data presented may therefore look a bit weird or not correct. The example data is just to demonstrate the overall layout and functionality.",
+        )
+
     if results_path and Path(results_path).exists():
         try:
             loaded = load_scenarios(results_path)
         except FileNotFoundError:
-            # We don't stop yet! The user might have runtime-added scenarios.
+            # Not stopping yet! The user might want to add runtime-added scenarios.
             pass
 
     all_scenarios = {**loaded, **st.session_state.added_scenarios}
