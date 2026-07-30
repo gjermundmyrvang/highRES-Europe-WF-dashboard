@@ -1,10 +1,10 @@
 from __future__ import annotations
-import random
 
 import pandas as pd
 import plotly.express as px
 import streamlit as st
 
+from data.transformer import random_hex_color
 from data.constants import TECH_COLORS
 from data.loader import load_scenario_summary
 from data.cost_transformer import format_money
@@ -183,16 +183,6 @@ def get_technology_order(
     return ordered_techs
 
 
-def _random_hex_color(seed_str):
-    """
-    TODO:
-    -----
-    This is used in `render_capacity_mix` so dimensions with other 'techs' thats does not have a color dict also gets a unique color. However random hex can produce colors that are too dark, too light, or low-contrast against the dashboard background. A better solution should be implemented.
-    """
-    rng = random.Random(seed_str)
-    return "#{:06x}".format(rng.randint(0, 0xFFFFFF))
-
-
 # CAPACITY MIX (one bar per scenario, one segment per technology/category)
 def render_category_mix(tidy: pd.DataFrame, base_scenario: str | None):
 
@@ -226,7 +216,7 @@ def render_category_mix(tidy: pd.DataFrame, base_scenario: str | None):
 
     tech_order = get_technology_order(plot_data, base_scenario)
     tech_colors = {
-        tech: TECH_COLORS.get(tech, _random_hex_color(tech))
+        tech: TECH_COLORS.get(tech, random_hex_color(tech))
         for tech in plot_data["item"].unique()
     }
 
