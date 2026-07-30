@@ -7,8 +7,10 @@ from ..shared.cost_breakdown import render_cost_breakdown
 
 def render_map(data, geo, inflation_factor, selected_currency, rate, gbp_value):
     st.title("Map Exploration")
-    st.markdown(
-        "> Displaying overview of installed capacity by technology in zones. **Click** any zone to view more in depth information about that zone."
+    st.markdown("> Displaying overview of installed capacity by technology in zones")
+    st.info(
+        body="**Click** any zone to view more in depth information about that zone.",
+        icon=":material/ads_click:",
     )
     df = data["var_tot_pcap_z"]
 
