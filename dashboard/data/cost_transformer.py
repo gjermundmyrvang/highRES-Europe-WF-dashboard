@@ -1,5 +1,6 @@
 import requests
 import streamlit as st
+import pandas as pd
 
 from data.constants import COST_COMPONENTS
 
@@ -158,3 +159,32 @@ def generate_total_category_breakdown(
         )
 
     return total_breakdown
+
+
+def get_category_totals_by_zone(data, category, inflation_factor, rate):
+    """
+    Per-zone version of generate_cost_breakdown: returns a DataFrame with
+    one row per zone (z, country_name, value), where value is the summed,
+    inflation- and currency-adjusted cost for the given category.
+
+    Used by the map's Cost dimension, which needs values broken out per
+    zone rather than a single total.
+    """
+    components = COST_COMPONENTS[category]
+    frames = [
+        data[var][["z", "country_name", "value"]]
+        for var in components
+        if var in data and not data[var].empty
+    ]
+
+    if not frames:
+        return pd.DataFrame(columns=["z", "country_name", "value"])
+
+    combined = pd.concat(frames)
+    agg = combined.groupby(["z", "country_name"], as_index=False)["value"].sum()
+
+    agg["value"] = agg["value"] * 1_000_000
+    agg["value"] = adjust_inflation(agg["value"], inflation_factor)
+    agg["value"] = adjust_currency(agg["value"], rate)
+
+    return agg
